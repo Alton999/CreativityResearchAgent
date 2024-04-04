@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-export const maxDuration = 300;
+export const maxDuration = 10;
 import { promptInputsSchema } from "@/schemas/promptInputs";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
@@ -7,17 +7,18 @@ import { cookies } from "next/headers";
 import { wordware } from "@/lib/wordware";
 
 export async function POST(req: Request, res: Response) {
+	const cookieStore = cookies();
+	const userId = cookieStore.get("userId");
+	if (!userId) {
+		return NextResponse.json(
+			{ error: "User not authenticated, please sign in." },
+			{ status: 401 }
+		);
+	}
 	try {
 		const body = await req.json();
 		const { question, field } = promptInputsSchema.parse(body);
-		const cookieStore = cookies();
-		const userId = cookieStore.get("userId");
-		if (!userId) {
-			return NextResponse.json(
-				{ error: "User not authenticated, please sign in." },
-				{ status: 401 }
-			);
-		}
+
 		const userIdString = userId.value as string;
 		console.log("User ID:", userIdString);
 

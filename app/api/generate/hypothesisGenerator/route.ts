@@ -1,25 +1,26 @@
 import { ZodError } from "zod";
-export const maxDuration = 300;
+export const maxDuration = 10;
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { cookies } from "next/headers";
 import { hypothesisGeneration } from "@/lib/hypothesisGeneration";
 
 export async function POST(req: Request, res: Response) {
+	const cookieStore = cookies();
+	const userId = cookieStore.get("userId");
+	if (!userId) {
+		return NextResponse.json(
+			{ error: "User not authenticated, please sign in." },
+			{ status: 401 }
+		);
+	}
 	try {
 		console.log("Request from hypothesis generator");
 
 		const searchResult = await req.json();
 		const searchResultInstance = searchResult.searchResultInstance;
 		console.log("Search result instance:", searchResultInstance);
-		const cookieStore = cookies();
-		const userId = cookieStore.get("userId");
-		if (!userId) {
-			return NextResponse.json(
-				{ error: "User not authenticated, please sign in." },
-				{ status: 401 }
-			);
-		}
+
 		// Lets get the prompt instance
 		const promptInstance = await prisma.prompt.findUnique({
 			where: { id: searchResultInstance.promptId }

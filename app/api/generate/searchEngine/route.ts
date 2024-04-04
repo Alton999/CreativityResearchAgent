@@ -1,22 +1,22 @@
 import { ZodError } from "zod";
-export const maxDuration = 300;
+export const maxDuration = 10;
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { cookies } from "next/headers";
 import { searchSummmaryWordware } from "@/lib/searchSummaryWordware";
 
 export async function POST(req: Request, res: Response) {
+	const cookieStore = cookies();
+	const userId = cookieStore.get("userId");
+	if (!userId) {
+		return NextResponse.json(
+			{ error: "User not authenticated, please sign in." },
+			{ status: 401 }
+		);
+	}
 	try {
 		const searchTerm = await req.json();
 		const searchTermInstance = searchTerm.searchTermInstance;
-		const cookieStore = cookies();
-		const userId = cookieStore.get("userId");
-		if (!userId) {
-			return NextResponse.json(
-				{ error: "User not authenticated, please sign in." },
-				{ status: 401 }
-			);
-		}
 
 		// Lets see if there is already an instance of search results in the database
 		const existingSearchResults = await prisma.searchResults.findFirst({
