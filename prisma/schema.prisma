@@ -1,0 +1,103 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+}
+
+model User {
+    id           String   @id @default(cuid())
+    email        String   @unique
+    name         String
+    organisation String
+    role         String
+    createdAt    DateTime @default(now())
+    prompts      Prompt[]
+}
+
+model Prompt {
+    id                   String                 @id @default(cuid())
+    userId               String
+    researchQuestion     String
+    researchField        String
+    createdAt            DateTime               @default(now())
+    user                 User                   @relation(fields: [userId], references: [id])
+    searchResults        SearchResults[]
+    searchTerms          SearchTerms[]
+    hypothesisGeneration HypothesisGeneration[]
+    hypothesisEvaluation HypothesisEvaluation[]
+    Reinitiator          Reinitiator[]
+
+    @@index([userId])
+}
+
+model SearchTerms {
+    id         String   @id @default(cuid())
+    question   String
+    field      String
+    createdAt  DateTime @default(now())
+    promptId   String
+    searchTerm String   @db.Text()
+    prompt     Prompt   @relation(fields: [promptId], references: [id])
+
+    @@unique([promptId, searchTerm])
+    @@index([promptId])
+}
+
+model SearchResults {
+    id           String   @id @default(cuid())
+    searchResult String
+    createdAt    DateTime @default(now())
+    promptId     String
+    searchTermId String
+    prompt       Prompt   @relation(fields: [promptId], references: [id])
+
+    @@unique([promptId, searchResult])
+    @@index([promptId])
+}
+
+model HypothesisGeneration {
+    id             String   @id @default(cuid())
+    promptId       String
+    searchTermId   String
+    searchResultId String
+    hypothesis     String   @db.Text()
+    createdAt      DateTime @default(now())
+    prompt         Prompt   @relation(fields: [promptId], references: [id])
+
+    @@unique([promptId, hypothesis])
+    @@index([promptId])
+}
+
+model HypothesisEvaluation {
+    id             String   @id @default(cuid())
+    promptId       String
+    searchTermId   String
+    searchResultId String
+    hypothesisId   String
+    evaluation     String   @db.Text()
+    createdAt      DateTime @default(now())
+    prompt         Prompt   @relation(fields: [promptId], references: [id])
+
+    @@unique([promptId, evaluation])
+    @@index([promptId])
+}
+
+model Reinitiator {
+    id                     String   @id @default(cuid())
+    promptId               String
+    searchTermId           String
+    searchResultId         String
+    hypothesisId           String
+    hypothesisEvaluationId String
+    reinitiation           String   @db.Text()
+    createdAt              DateTime @default(now())
+    prompt                 Prompt   @relation(fields: [promptId], references: [id])
+
+    @@unique([promptId, reinitiation])
+    @@index([promptId])
+}
