@@ -1,19 +1,9 @@
-import { ZodError } from "zod";
 export const maxDuration = 300;
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { cookies } from "next/headers";
 import { evaluator } from "@/lib/evaluator";
 
 export async function POST(req: Request, res: Response) {
-	const cookieStore = cookies();
-	const userId = cookieStore.get("userId");
-	if (!userId) {
-		return NextResponse.json(
-			{ error: "User not authenticated, please sign in." },
-			{ status: 401 }
-		);
-	}
 	try {
 		console.log("Request from hypothesis evaluator");
 

@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-export const maxDuration = 300;
+export const maxDuration = 10;
 import { promptInputsSchema } from "@/schemas/promptInputs";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
