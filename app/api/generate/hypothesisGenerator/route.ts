@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-export const maxDuration = 10;
+export const maxDuration = 300;
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { cookies } from "next/headers";
