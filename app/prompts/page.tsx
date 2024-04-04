@@ -11,7 +11,6 @@ import {
 	CardTitle
 } from "@/components/ui/card";
 import RedirectModal from "@/components/RedirectModal";
-import { Button } from "@/components/ui/button";
 
 const Prompts = async () => {
 	const cookieStore = cookies();
