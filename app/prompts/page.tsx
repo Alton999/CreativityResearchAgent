@@ -10,7 +10,7 @@ import {
 	CardHeader,
 	CardTitle
 } from "@/components/ui/card";
-import RedirectModal from "@/components/redirectModal";
+import RedirectModal from "@/components/RedirectModal";
 import { Button } from "@/components/ui/button";
 
 const Prompts = async () => {
