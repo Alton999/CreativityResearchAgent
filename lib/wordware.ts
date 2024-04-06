@@ -45,8 +45,8 @@ export const wordware = async ({
 				// }
 				// Check if response is of type generation and label is script. Don't want classification.
 				if (responseJson.value.type === "outputs") {
-					console.log("Response", responseJson.value.values.Question);
-					return responseJson.value.values.Question;
+					console.log("Response", responseJson.value.values.final);
+					return responseJson.value.values.final;
 				} else {
 					return "";
 				}

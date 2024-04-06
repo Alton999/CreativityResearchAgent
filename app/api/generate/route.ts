@@ -41,17 +41,18 @@ export async function POST(req: Request, res: Response) {
 			}
 		});
 
-		const search_terms = await wordware({
+		const searchTerms = await wordware({
 			question: question,
 			field: field,
 			wordwarePromptId: "2241c8ff-339f-4330-a284-383bda778d8f"
 		});
+		console.log("Search terms:", searchTerms);
 		await prisma.searchTerms.create({
 			data: {
 				promptId: promptInstance.id,
 				question: question,
 				field: field,
-				searchTerm: search_terms
+				searchTerm: searchTerms
 			}
 		});
 		const promptId = promptInstance.id;
