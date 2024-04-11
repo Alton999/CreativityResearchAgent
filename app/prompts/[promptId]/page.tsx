@@ -25,6 +25,7 @@ type PromptType = {
 	researchQuestion: string;
 	researchField: string;
 	createdAt: string;
+	searchResultsSummary: string;
 	searchTerms: {
 		id: string;
 		question: string;
@@ -32,6 +33,7 @@ type PromptType = {
 		createdAt: string;
 		promptId: string;
 		searchTerm: string;
+		explanation: string;
 	}[];
 	searchResults: {
 		id: string;
@@ -75,6 +77,7 @@ const PromptResults = ({ params: { promptId } }: Props) => {
 		researchQuestion: "",
 		researchField: "",
 		createdAt: "",
+		searchResultsSummary: "",
 		searchTerms: [],
 		searchResults: [],
 		hypothesisGeneration: [],
@@ -108,11 +111,13 @@ const PromptResults = ({ params: { promptId } }: Props) => {
 
 	useEffect(() => {
 		const fetchSearchResults = async () => {
-			if (prompt) {
+			if (prompt && prompt.searchTerms.length > 0) {
+				console.log("Prompt search terms:", prompt.searchTerms);
 				const response = await axios.post("/api/generate/searchEngine", {
-					searchTermInstance: prompt.searchTerms[0]
+					searchTermInstance: prompt.searchTerms
 				});
-				setSearchResults(response.data.searchResult);
+				console.log(response);
+				setSearchResults(response.data.searchResultsSummary);
 			}
 		};
 		fetchSearchResults();
@@ -122,7 +127,7 @@ const PromptResults = ({ params: { promptId } }: Props) => {
 		const fetchHypothesisGeneration = async () => {
 			if (searchResults) {
 				const response = await axios.post("/api/generate/hypothesisGenerator", {
-					searchResultInstance: searchResults
+					promptInstance: prompt
 				});
 				setHypothesisGeneration(response.data.hypothesisGeneration);
 			}
@@ -168,7 +173,7 @@ const PromptResults = ({ params: { promptId } }: Props) => {
 					<CardHeader>
 						<CardTitle className="leading-7">Research question</CardTitle>
 						<CardDescription className="text-lg">
-							{prompt.researchQuestion}
+							{prompt ? prompt.researchQuestion : "Loading prompt..."}
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-8">
@@ -176,10 +181,24 @@ const PromptResults = ({ params: { promptId } }: Props) => {
 							<CardHeader>
 								<CardTitle>Search terms</CardTitle>
 							</CardHeader>
-							<CardContent>
-								<pre style={{ whiteSpace: "pre-wrap" }}>
-									{prompt.searchTerms[0]?.searchTerm}
-								</pre>
+							<CardContent className="space-y-4">
+								{prompt ? (
+									prompt.searchTerms.map((searchTerm, index: Number) => (
+										<div key={`${searchTerm.id}`}>
+											<pre
+												className="font-bold text-lg"
+												style={{ whiteSpace: "pre-wrap" }}
+											>
+												{searchTerm.searchTerm}
+											</pre>
+											<pre style={{ whiteSpace: "pre-wrap" }}>
+												{searchTerm.explanation}
+											</pre>
+										</div>
+									))
+								) : (
+									<FetchLoading />
+								)}
 							</CardContent>
 						</Card>
 						<Card>
@@ -190,7 +209,7 @@ const PromptResults = ({ params: { promptId } }: Props) => {
 								{searchResults ? (
 									<div className="w-full">
 										<pre style={{ whiteSpace: "pre-wrap" }}>
-											{searchResults.searchResult}
+											{prompt.searchResultsSummary}
 										</pre>
 									</div>
 								) : (

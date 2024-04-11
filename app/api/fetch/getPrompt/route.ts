@@ -18,7 +18,7 @@ export async function GET(req: Request) {
 			},
 			include: {
 				searchTerms: true,
-				searchResults: true,
+				// searchResults: true,
 				hypothesisGeneration: true,
 				hypothesisEvaluation: true
 			}

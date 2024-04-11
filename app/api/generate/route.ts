@@ -44,19 +44,24 @@ export async function POST(req: Request, res: Response) {
 		const searchTerms = await wordware({
 			question: question,
 			field: field,
-			wordwarePromptId: "2241c8ff-339f-4330-a284-383bda778d8f"
+			wordwarePromptId: "1bc52400-ac36-4904-81fd-968baa6b2946"
 		});
-		console.log("Search terms:", searchTerms);
-		await prisma.searchTerms.create({
-			data: {
+
+		const allSearchTerms = searchTerms.map((term) => {
+			return {
 				promptId: promptInstance.id,
 				question: question,
 				field: field,
-				searchTerm: searchTerms
-			}
+				searchTerm: term.searchTerm,
+				explanation: term.explanation
+			};
 		});
+		await prisma.searchTerms.createMany({
+			data: allSearchTerms
+		});
+
 		const promptId = promptInstance.id;
-		return NextResponse.json({ promptId });
+		return NextResponse.json({ promptId: promptId });
 	} catch (error: any) {
 		console.error("Error creating prompt:");
 		console.error("Error message:", error.message);

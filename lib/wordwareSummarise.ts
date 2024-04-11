@@ -3,30 +3,21 @@ const wordwareAPI = process.env.WORDWARE_API_KEY;
 
 type WordwareType = {
 	wordwarePromptId: string;
-	question: string;
-	field: string;
+	context: string;
 };
 
-type SearchTermsArray = {
-	searchTerm: string;
-	explanation: string;
-};
-
-export const wordware = async ({
-	question,
-	field,
+export const wordwareSummarise = async ({
+	context,
 	wordwarePromptId
-}: WordwareType): Promise<SearchTermsArray[]> => {
+}: WordwareType): Promise<string> => {
 	try {
-		console.log("Trying wordware", question, field);
 		const data = await fetch(
 			`https://app.wordware.ai/api/prompt/${wordwarePromptId}/run`,
 			{
 				method: "post",
 				body: JSON.stringify({
 					inputs: {
-						research_question: question,
-						fields: field
+						context: context
 					}
 				}),
 				headers: {
@@ -59,9 +50,7 @@ export const wordware = async ({
 			.join("");
 
 		// Should return an array of SearchTerm objects
-		const searchTermJson = JSON.parse(summary);
-		console.log("Summary JSON:", searchTermJson);
-		return searchTermJson;
+		return summary;
 	} catch (error) {
 		console.log("Error fetching wordware", error);
 		throw error;

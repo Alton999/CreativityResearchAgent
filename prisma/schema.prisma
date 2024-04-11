@@ -26,7 +26,7 @@ model Prompt {
     researchField        String
     createdAt            DateTime               @default(now())
     user                 User                   @relation(fields: [userId], references: [id])
-    searchResults        SearchResults[]
+    searchResultsSummary String                 @default("") @db.Text()
     searchTerms          SearchTerms[]
     hypothesisGeneration HypothesisGeneration[]
     hypothesisEvaluation HypothesisEvaluation[]
@@ -36,35 +36,36 @@ model Prompt {
 }
 
 model SearchTerms {
-    id         String   @id @default(cuid())
-    question   String
-    field      String
-    createdAt  DateTime @default(now())
-    promptId   String
-    searchTerm String   @db.Text()
-    prompt     Prompt   @relation(fields: [promptId], references: [id])
+    id            String          @id @default(cuid())
+    question      String
+    field         String
+    createdAt     DateTime        @default(now())
+    promptId      String
+    searchTerm    String          @db.Text()
+    explanation   String          @default("") @db.Text()
+    prompt        Prompt          @relation(fields: [promptId], references: [id])
+    SearchResults SearchResults[]
 
     @@unique([promptId, searchTerm])
     @@index([promptId])
 }
 
 model SearchResults {
-    id           String   @id @default(cuid())
-    searchResult String
-    createdAt    DateTime @default(now())
-    promptId     String
+    id           String      @id @default(cuid())
     searchTermId String
-    prompt       Prompt   @relation(fields: [promptId], references: [id])
+    searchResult String
+    createdAt    DateTime    @default(now())
+    searchTerms  SearchTerms @relation(fields: [searchTermId], references: [id])
 
-    @@unique([promptId, searchResult])
-    @@index([promptId])
+    @@unique([searchTermId, searchResult])
+    @@index([searchTermId])
 }
 
 model HypothesisGeneration {
     id             String   @id @default(cuid())
     promptId       String
-    searchTermId   String
-    searchResultId String
+    searchTermId   String   @default("")
+    searchResultId String   @default("")
     hypothesis     String   @db.Text()
     createdAt      DateTime @default(now())
     prompt         Prompt   @relation(fields: [promptId], references: [id])

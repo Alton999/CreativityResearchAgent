@@ -3,28 +3,35 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hypothesisGeneration } from "@/lib/hypothesisGeneration";
 
+type PromptInstance = {
+	searchResultsSummary: string;
+	researchQuestion: string;
+	id: string;
+	userId: string;
+	researchField: string;
+};
 export async function POST(req: Request, res: Response) {
 	try {
 		console.log("Request from hypothesis generator");
 
-		const searchResult = await req.json();
-		const searchResultInstance = searchResult.searchResultInstance;
-		console.log("Search result instance:", searchResultInstance);
+		const prompt = await req.json();
+		const promptInstance = prompt.promptInstance;
+		console.log("Prompt instance:", promptInstance);
 
 		// Lets get the prompt instance
-		const promptInstance = await prisma.prompt.findUnique({
-			where: { id: searchResultInstance.promptId }
-		});
-		if (!promptInstance) {
-			return NextResponse.json({
-				error: "Prompt instance not found"
-			});
-		}
+		// const promptInstance = await prisma.prompt.findUnique({
+		// 	where: { id: searchResultInstance.promptId }
+		// });
+		// if (!promptInstance) {
+		// 	return NextResponse.json({
+		// 		error: "Prompt instance not found"
+		// 	});
+		// }
 		// Lets see if there is already an instance of search results in the database
 		const existingHypothesisGeneration =
 			await prisma.hypothesisGeneration.findFirst({
 				where: {
-					promptId: searchResultInstance.promptId
+					promptId: promptInstance.id
 				}
 			});
 
@@ -39,17 +46,18 @@ export async function POST(req: Request, res: Response) {
 			});
 		} else {
 			const hypothesis = await hypothesisGeneration({
-				searchResults: searchResultInstance.searchResult,
+				searchResults: promptInstance.searchResultsSummary,
 				wordwarePromptId: "77a66890-8637-4c3d-a030-1cc1de67f72f",
 				researchQuestion: promptInstance.researchQuestion
 			});
+
 			const hypothesisGenerationInstance =
 				await prisma.hypothesisGeneration.create({
 					data: {
-						promptId: searchResultInstance.promptId,
-						hypothesis: hypothesis,
-						searchTermId: searchResultInstance.searchTermId,
-						searchResultId: searchResultInstance.id
+						promptId: promptInstance.id,
+						hypothesis: hypothesis
+						// searchTermId: promptInstance.searchTerms[0].id,
+						// searchResultId: promptInstance.searchResults[0].id
 					}
 				});
 
