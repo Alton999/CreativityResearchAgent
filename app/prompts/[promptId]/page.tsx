@@ -85,7 +85,7 @@ const PromptResults = ({ params: { promptId } }: Props) => {
 		reinitiator: []
 	});
 	const [searchResults, setSearchResults] = useState<
-		PromptType["searchResults"][0] | null
+		PromptType["searchResultsSummary"] | null
 	>(null);
 	const [hypothesisGeneration, setHypothesisGeneration] = useState<
 		PromptType["hypothesisGeneration"][0] | null
@@ -125,7 +125,7 @@ const PromptResults = ({ params: { promptId } }: Props) => {
 
 	useEffect(() => {
 		const fetchHypothesisGeneration = async () => {
-			if (prompt.searchResultsSummary !== "") {
+			if (searchResults !== "" && prompt.searchResultsSummary !== "") {
 				const response = await axios.post("/api/generate/hypothesisGenerator", {
 					promptInstance: prompt
 				});
@@ -134,7 +134,7 @@ const PromptResults = ({ params: { promptId } }: Props) => {
 		};
 
 		fetchHypothesisGeneration();
-	}, [prompt.searchResultsSummary]);
+	}, [searchResults, prompt.searchResultsSummary]);
 
 	useEffect(() => {
 		const fetchHypothesisEvaluation = async () => {
@@ -209,7 +209,7 @@ const PromptResults = ({ params: { promptId } }: Props) => {
 								{searchResults ? (
 									<div className="w-full">
 										<pre style={{ whiteSpace: "pre-wrap" }}>
-											{prompt.searchResultsSummary}
+											{searchResults}
 										</pre>
 									</div>
 								) : (

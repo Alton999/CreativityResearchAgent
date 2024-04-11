@@ -50,10 +50,8 @@ export async function POST(req: Request, res: Response) {
 				await prisma.hypothesisEvaluation.create({
 					data: {
 						promptId: hypothesisGenerationInstance.promptId,
-						hypothesisId: hypothesisGenerationInstance.id,
-						searchTermId: hypothesisGenerationInstance.searchTermId,
-						searchResultId: hypothesisGenerationInstance.id,
-						evaluation: evaluation
+						evaluation: evaluation,
+						searchTermId: hypothesisGenerationInstance.searchTermId
 					}
 				});
 

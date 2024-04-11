@@ -77,9 +77,9 @@ model HypothesisGeneration {
 model HypothesisEvaluation {
   id             String   @id @default(cuid())
   promptId       String
-  searchTermId   String
-  searchResultId String
-  hypothesisId   String
+  searchTermId   String   @default("")
+  searchResultId String   @default("")
+  hypothesisId   String   @default("")
   evaluation     String
   createdAt      DateTime @default(now())
   prompt         Prompt   @relation(fields: [promptId], references: [id])
