@@ -15,7 +15,7 @@ export async function POST(req: Request, res: Response) {
 		console.log("Request from hypothesis generator");
 
 		const prompt = await req.json();
-		const promptInstance = prompt.promptInstance;
+		const promptInstance: PromptInstance = prompt.promptInstance;
 		console.log("Prompt instance:", promptInstance);
 
 		// Lets get the prompt instance
@@ -45,6 +45,7 @@ export async function POST(req: Request, res: Response) {
 				hypothesisGeneration: existingHypothesisGeneration
 			});
 		} else {
+			console.log("Creating new hypothesis generation instance");
 			const hypothesis = await hypothesisGeneration({
 				searchResults: promptInstance.searchResultsSummary,
 				wordwarePromptId: "77a66890-8637-4c3d-a030-1cc1de67f72f",

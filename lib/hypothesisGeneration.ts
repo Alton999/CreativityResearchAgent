@@ -46,7 +46,6 @@ export const hypothesisGeneration = async ({
 				// if (responseJson.value?.type !== "chunk") {
 				// 	console.log("Response type", responseJson?.value);
 				// }
-				console.log("Response from search summary", responseJson);
 				if (responseJson.value.type === "outputs") {
 					console.log("Response", responseJson.value.values.final);
 					return responseJson.value.values.final;

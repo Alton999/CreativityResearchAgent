@@ -125,7 +125,7 @@ const PromptResults = ({ params: { promptId } }: Props) => {
 
 	useEffect(() => {
 		const fetchHypothesisGeneration = async () => {
-			if (searchResults) {
+			if (prompt.searchResultsSummary !== "") {
 				const response = await axios.post("/api/generate/hypothesisGenerator", {
 					promptInstance: prompt
 				});
@@ -134,7 +134,7 @@ const PromptResults = ({ params: { promptId } }: Props) => {
 		};
 
 		fetchHypothesisGeneration();
-	}, [searchResults]);
+	}, [prompt.searchResultsSummary]);
 
 	useEffect(() => {
 		const fetchHypothesisEvaluation = async () => {
