@@ -18,15 +18,6 @@ export async function POST(req: Request, res: Response) {
 		const promptInstance: PromptInstance = prompt.promptInstance;
 		console.log("Prompt instance:", promptInstance);
 
-		// Lets get the prompt instance
-		// const promptInstance = await prisma.prompt.findUnique({
-		// 	where: { id: searchResultInstance.promptId }
-		// });
-		// if (!promptInstance) {
-		// 	return NextResponse.json({
-		// 		error: "Prompt instance not found"
-		// 	});
-		// }
 		// Lets see if there is already an instance of search results in the database
 		const existingHypothesisGeneration =
 			await prisma.hypothesisGeneration.findFirst({
