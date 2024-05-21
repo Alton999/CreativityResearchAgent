@@ -30,10 +30,11 @@ const Welcome = () => {
         return (
           <Card className="w-[800px]">
             <CardHeader className="space-y-2">
-              <CardTitle> Welcome to creative agent V1</CardTitle>
+              <CardTitle> Welcome to creative agent V2</CardTitle>
               <CardDescription className="text-lg">
-                We are excited to have you on our beta test of our creative
-                systems.
+                We are excited to launch version 2 of this beta, this new
+                version introduces human in the loop hypotheiss generation and
+                evaluation.
               </CardDescription>
             </CardHeader>
             <CardContent>

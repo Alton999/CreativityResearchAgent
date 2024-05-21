@@ -18,46 +18,30 @@ export async function POST(req: Request, res: Response) {
 		const promptInstance: PromptInstance = prompt.promptInstance;
 		console.log("Prompt instance:", promptInstance);
 
-		// Lets see if there is already an instance of search results in the database
-		const existingHypothesisGeneration =
-			await prisma.hypothesisGeneration.findFirst({
-				where: {
-					promptId: promptInstance.id
+		console.log(
+			"Creating new hypothesis generation instance from this search summary",
+			promptInstance.searchResultsSummary
+		);
+		const hypothesis = await hypothesisGeneration({
+			searchResults: promptInstance.searchResultsSummary,
+			wordwarePromptId: "77a66890-8637-4c3d-a030-1cc1de67f72f",
+			researchQuestion: promptInstance.researchQuestion
+		});
+
+		const hypothesisGenerationInstance =
+			await prisma.hypothesisGeneration.create({
+				data: {
+					promptId: promptInstance.id,
+					hypothesis: hypothesis
 				}
 			});
-
-		// If instance exists return that instance else create new instance
-		if (existingHypothesisGeneration) {
-			console.log(
-				"Hypothesis generation exists:",
-				existingHypothesisGeneration
-			);
-			return NextResponse.json({
-				hypothesisGeneration: existingHypothesisGeneration
-			});
-		} else {
-			console.log("Creating new hypothesis generation instance");
-			const hypothesis = await hypothesisGeneration({
-				searchResults: promptInstance.searchResultsSummary,
-				wordwarePromptId: "77a66890-8637-4c3d-a030-1cc1de67f72f",
-				researchQuestion: promptInstance.researchQuestion
-			});
-
-			const hypothesisGenerationInstance =
-				await prisma.hypothesisGeneration.create({
-					data: {
-						promptId: promptInstance.id,
-						hypothesis: hypothesis
-						// searchTermId: promptInstance.searchTerms[0].id,
-						// searchResultId: promptInstance.searchResults[0].id
-					}
-				});
-
-			// console.log("Hypothesis generation:", hypothesisGenerationInstance);
-			return NextResponse.json({
-				hypothesisGeneration: hypothesisGenerationInstance
-			});
-		}
+		console.log(
+			"Hypothesis generated:",
+			hypothesisGenerationInstance.hypothesis
+		);
+		return NextResponse.json({
+			hypothesisGeneration: hypothesisGenerationInstance
+		});
 	} catch (error: any) {
 		console.error("Error generating hypothesis");
 		console.error("Error message:", error.message);

@@ -31,7 +31,7 @@ export async function POST(req: Request, res: Response) {
         maxAge: 30 * 24 * 60 * 60,
         path: "/",
       });
-      console.log("User ID:", user.id);
+      console.log("User created successfully, User ID:", user);
       return NextResponse.json({ userId: user.id });
     }
   } catch (error: any) {

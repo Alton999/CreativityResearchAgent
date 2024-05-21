@@ -43,6 +43,8 @@ model SearchTerms {
   promptId      String
   searchTerm    String
   explanation   String          @default("")
+  newSearchTerm Boolean         @default(false)
+  parentId      String          @default("")
   SearchResults SearchResults[]
   prompt        Prompt          @relation(fields: [promptId], references: [id])
 
