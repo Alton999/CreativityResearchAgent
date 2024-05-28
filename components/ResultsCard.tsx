@@ -74,7 +74,7 @@ const ResultsCard = ({ prompt }: Props) => {
 			}
 		};
 		fetchHypothesisGeneration();
-	}, [searchResults, prompt]);
+	}, [searchResults, prompt, hypothesisGeneration]);
 
 	useEffect(() => {
 		const fetchHypothesisEvaluation = async () => {
