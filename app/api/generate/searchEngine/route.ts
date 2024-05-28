@@ -89,7 +89,6 @@ export async function POST(req: Request, res: Response) {
 		console.error("Error generating search results:");
 		console.error("Error message:", error.message);
 		console.error("Error stack trace:", error.stack);
-
 		return NextResponse.json({
 			error: "Something went wrong",
 			errorMeta: JSON.stringify(error)

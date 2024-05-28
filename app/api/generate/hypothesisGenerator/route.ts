@@ -55,7 +55,7 @@ export async function POST(req: Request, res: Response) {
 
 			// console.log("Hypothesis generation:", hypothesisGenerationInstance);
 			return NextResponse.json({
-				hypothesisGeneration: hypothesisGenerationInstance
+				hypothesisGeneration: [hypothesisGenerationInstance]
 			});
 		}
 	} catch (error: any) {

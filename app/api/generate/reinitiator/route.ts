@@ -9,13 +9,8 @@ export async function POST(req: Request, res: Response) {
 
 		const hypothesisEvaluation = await req.json();
 		const hypothesisEvaluationInstance =
-			hypothesisEvaluation.hypothesisEvaluationInstance;
-		console.log(
-			"Hypothesis generation instance: ",
-			hypothesisEvaluationInstance
-		);
+			hypothesisEvaluation.hypothesisEvaluationInstance[0];
 
-		console.log("Prompt ID", hypothesisEvaluationInstance.promptId);
 		// Lets get the prompt instance
 		const promptInstance = await prisma.prompt.findUnique({
 			where: { id: hypothesisEvaluationInstance.promptId }
@@ -59,7 +54,7 @@ export async function POST(req: Request, res: Response) {
 
 			// 	// console.log("Hypothesis generation:", hypothesisGenerationInstance);
 			return NextResponse.json({
-				reinitiation: reinitiatorInstance
+				reinitiation: [reinitiatorInstance]
 			});
 		}
 	} catch (error: any) {

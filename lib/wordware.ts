@@ -1,6 +1,6 @@
-// const wordwarePromptId = "816acaae-3f3c-473e-b957-125ff26f7c6d";
 const wordwareAPI = process.env.WORDWARE_API_KEY;
 
+import { cleanupStringToJSON } from "@/lib/cleanupStringToJSON";
 type WordwareType = {
 	wordwarePromptId: string;
 	question: string;
@@ -59,7 +59,9 @@ export const wordware = async ({
 			.join("");
 
 		// Should return an array of SearchTerm objects
-		const searchTermJson = JSON.parse(summary);
+		// Clean up string before going to parse
+		const cleanedString = cleanupStringToJSON(summary);
+		const searchTermJson = JSON.parse(cleanedString);
 		console.log("Summary JSON:", searchTermJson);
 		return searchTermJson;
 	} catch (error) {

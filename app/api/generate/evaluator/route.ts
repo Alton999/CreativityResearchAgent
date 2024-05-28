@@ -9,7 +9,7 @@ export async function POST(req: Request, res: Response) {
 
 		const hypothesisGeneration = await req.json();
 		const hypothesisGenerationInstance =
-			hypothesisGeneration.hypothesisGenerationInstance;
+			hypothesisGeneration.hypothesisGenerationInstance[0];
 		console.log(
 			"Hypothesis generation instance: ",
 			hypothesisGenerationInstance
@@ -57,7 +57,7 @@ export async function POST(req: Request, res: Response) {
 
 			// 	// console.log("Hypothesis generation:", hypothesisGenerationInstance);
 			return NextResponse.json({
-				hypothesisEvaluation: hypothesisEvaluationInstance
+				hypothesisEvaluation: [hypothesisEvaluationInstance]
 			});
 		}
 	} catch (error: any) {
