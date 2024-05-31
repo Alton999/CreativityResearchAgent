@@ -18,26 +18,15 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { SearchTerm as SearchTermType } from "@/types";
 
 type Input = z.infer<typeof feedbackSchema>;
 
 type SearchTermProps = {
-	searchTerm: {
-		id: string;
-		question: string;
-		field: string;
-		createdAt: string;
-		promptId: string;
-		searchTerm: string;
-		explanation: string;
-		newSearchTerm: boolean;
-		parentId: string;
-	};
-	addNewSearchTerm: (newSearchTerm: SearchTermProps["searchTerm"]) => void;
-	selectedSearchTerms: SearchTermProps["searchTerm"][];
-	handleSearchTermSelection: (
-		searchTerm: SearchTermProps["searchTerm"]
-	) => void;
+	searchTerm: SearchTermType;
+	addNewSearchTerm: (newSearchTerm: SearchTermType) => void;
+	selectedSearchTerms: SearchTermType[];
+	handleSearchTermSelection: (searchTerm: SearchTermType) => void;
 };
 const SearchTerm = ({
 	searchTerm,
@@ -48,6 +37,8 @@ const SearchTerm = ({
 	const [status, setStatus] = useState<string | null>(null);
 	const [isOpen, setIsOpen] = useState(false);
 	const [isSelected, setIsSelected] = useState(false);
+	const [feedbackLoading, setFeedbackLoading] = useState(false);
+
 	const className = `border text-card-foreground p-8 cursor-pointer rounded-xl ${
 		isSelected ? "shadow-xl" : ""
 	}`;
@@ -59,6 +50,7 @@ const SearchTerm = ({
 		},
 		unselected: { boxShadow: "none" }
 	};
+	const [feedback, setFeedback] = useState<string>("");
 	useEffect(() => {
 		const selected = selectedSearchTerms.some(
 			(term) => term.id === searchTerm.id
@@ -66,43 +58,21 @@ const SearchTerm = ({
 		setIsSelected(selected);
 	}, [selectedSearchTerms, searchTerm]);
 
-	const form = useForm<Input>({
-		resolver: zodResolver(feedbackSchema),
-		defaultValues: {
-			feedback: "",
-			searchTerm: searchTerm
+	const generateNewSearchTerm = async () => {
+		if (feedback.length < 40) {
+			alert("Please provide more feedback");
+			return;
 		}
-	});
-	const { mutate: submitFeedback } = useMutation({
-		mutationFn: async ({ feedback }: Input) => {
-			const response = await axios.post("/api/aiFeedback/searchTerms", {
-				searchTerm: searchTerm,
-				feedback
-			});
-			return response.data;
-		}
-	});
-	function feedback(input: Input) {
-		setStatus("pending");
-		submitFeedback(
-			{
-				feedback: input.feedback,
-				searchTerm: searchTerm
-			},
-			{
-				onSuccess: ({ searchTermInstance }) => {
-					console.log("Search term instance:", searchTermInstance);
-					addNewSearchTerm(searchTermInstance);
-					setIsOpen(false);
-					form.reset();
-					setStatus("Resolved");
-				},
-				onError: (error: any) => {
-					console.error(error);
-				}
-			}
-		);
-	}
+		setFeedbackLoading(true);
+		const response = await axios.post("/api/aiFeedback/searchTerms", {
+			feedback,
+			searchTerm
+		});
+		const newSearchTerm = response.data.searchTermInstance;
+		setFeedbackLoading(false);
+		setFeedback("");
+		addNewSearchTerm(newSearchTerm);
+	};
 	return (
 		<div>
 			<motion.div
@@ -141,35 +111,17 @@ const SearchTerm = ({
 				className="w-full overflow-hidden"
 			>
 				<div className="w-full py-6 flex gap-4 border px-4 b-t-0">
-					<Form {...form}>
-						<form
-							onSubmit={form.handleSubmit(feedback)}
-							className="flex flex-1 gap-8"
-						>
-							<FormField
-								control={form.control}
-								name="feedback"
-								render={({ field }) => (
-									<FormItem className="w-full">
-										<FormControl>
-											<Input placeholder="Enter your feedback..." {...field} />
-										</FormControl>
-
-										<FormMessage>
-											{form.formState.errors.feedback?.message}
-										</FormMessage>
-									</FormItem>
-								)}
-							/>
-							<Button type="submit" disabled={status === "pending"}>
-								{status === "pending" ? (
-									<LoaderCircle className="animate-spin" />
-								) : (
-									"Submit feedback"
-								)}
-							</Button>
-						</form>
-					</Form>
+					<Input
+						value={feedback}
+						onChange={(e) => setFeedback(e.target.value)}
+					/>
+					<Button onClick={generateNewSearchTerm}>
+						{feedbackLoading ? (
+							<LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+						) : (
+							"Submit"
+						)}
+					</Button>
 				</div>
 			</motion.div>
 		</div>

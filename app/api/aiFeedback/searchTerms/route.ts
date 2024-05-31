@@ -27,8 +27,7 @@ export async function POST(req: Request, res: Response) {
 				explanation: newSearchTerm.explanation,
 				question: searchTerm.question,
 				field: searchTerm.field,
-				newSearchTerm: true,
-				parentId: searchTerm.id
+				newSearchTerm: true
 			}
 		});
 		// const allSearchTerms = searchTerms.map((term) => {

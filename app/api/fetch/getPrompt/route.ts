@@ -19,8 +19,7 @@ export async function GET(req: Request) {
 			include: {
 				searchTerms: true,
 				// searchResults: true,
-				hypothesisGeneration: true,
-				hypothesisEvaluation: true
+				hypothesisGeneration: true
 			}
 		});
 		console.log("Prompt:", prompt);

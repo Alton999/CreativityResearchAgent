@@ -12,6 +12,6 @@ const searchTermSchema = z.object({
 export const feedbackSchema = z.object({
 	feedback: z
 		.string()
-		.min(70, "Please give me detailed feedback on how I can improve."),
+		.min(40, "Please give me detailed feedback on how I can improve."),
 	searchTerm: searchTermSchema
 });

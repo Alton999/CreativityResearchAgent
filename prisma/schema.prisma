@@ -26,7 +26,6 @@ model Prompt {
   researchField        String
   createdAt            DateTime               @default(now())
   searchResultsSummary String                 @default("")
-  hypothesisEvaluation HypothesisEvaluation[]
   hypothesisGeneration HypothesisGeneration[]
   user                 User                   @relation(fields: [userId], references: [id])
   Reinitiator          Reinitiator[]
@@ -73,20 +72,6 @@ model HypothesisGeneration {
   prompt         Prompt   @relation(fields: [promptId], references: [id])
 
   @@unique([promptId, hypothesis])
-  @@index([promptId])
-}
-
-model HypothesisEvaluation {
-  id             String   @id @default(cuid())
-  promptId       String
-  searchTermId   String   @default("")
-  searchResultId String   @default("")
-  hypothesisId   String   @default("")
-  evaluation     String
-  createdAt      DateTime @default(now())
-  prompt         Prompt   @relation(fields: [promptId], references: [id])
-
-  @@unique([promptId, evaluation])
   @@index([promptId])
 }
 
