@@ -20,8 +20,6 @@ export type SearchResult = {
 export type HypothesisGeneration = {
 	id: string;
 	promptId: string;
-	searchTermId: string;
-	searchResultId: string;
 	hypothesis: string;
 	createdAt: string;
 };
@@ -48,4 +46,9 @@ export type PromptType = {
 	searchResults: SearchResult[];
 	hypothesisGeneration: HypothesisGeneration[];
 	Reinitiator: Reinitiator[];
+};
+
+export type WordwareGeneration = {
+	inputs: Object;
+	wordwarePromptId: string;
 };

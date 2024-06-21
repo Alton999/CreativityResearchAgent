@@ -27,9 +27,9 @@ model Prompt {
   createdAt            DateTime               @default(now())
   searchResultsSummary String                 @default("")
   hypothesisGeneration HypothesisGeneration[]
-  user                 User                   @relation(fields: [userId], references: [id])
   Reinitiator          Reinitiator[]
   searchTerms          SearchTerms[]
+  user                 User                   @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
@@ -43,7 +43,6 @@ model SearchTerms {
   searchTerm    String
   explanation   String          @default("")
   newSearchTerm Boolean         @default(false)
-  parentId      String          @default("")
   SearchResults SearchResults[]
   prompt        Prompt          @relation(fields: [promptId], references: [id])
 
@@ -63,28 +62,22 @@ model SearchResults {
 }
 
 model HypothesisGeneration {
-  id             String   @id @default(cuid())
-  promptId       String
-  searchTermId   String   @default("")
-  searchResultId String   @default("")
-  hypothesis     String
-  createdAt      DateTime @default(now())
-  prompt         Prompt   @relation(fields: [promptId], references: [id])
+  id         String   @id @default(cuid())
+  promptId   String
+  hypothesis String
+  createdAt  DateTime @default(now())
+  prompt     Prompt   @relation(fields: [promptId], references: [id])
 
   @@unique([promptId, hypothesis])
   @@index([promptId])
 }
 
 model Reinitiator {
-  id                     String   @id @default(cuid())
-  promptId               String
-  searchTermId           String
-  searchResultId         String
-  hypothesisId           String
-  hypothesisEvaluationId String
-  reinitiation           String
-  createdAt              DateTime @default(now())
-  prompt                 Prompt   @relation(fields: [promptId], references: [id])
+  id           String   @id @default(cuid())
+  promptId     String
+  reinitiation String
+  createdAt    DateTime @default(now())
+  prompt       Prompt   @relation(fields: [promptId], references: [id])
 
   @@unique([promptId, reinitiation])
   @@index([promptId])

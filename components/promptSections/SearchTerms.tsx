@@ -5,19 +5,20 @@ import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { SearchTerm as SearchTermType } from "@/types";
 import axios from "axios";
+import { Loader2 } from "lucide-react";
 
 type Props = {
 	searchTerms: SearchTermType[];
 	setSearchTerms: React.Dispatch<React.SetStateAction<SearchTermType[]>>;
 	setSearchResultsSummary: React.Dispatch<React.SetStateAction<string>>;
-	setSearchResultsSummaryLoading: React.Dispatch<React.SetStateAction<boolean>>;
+	searchResultsSummary: string;
 };
 
 const SearchTerms = ({
 	searchTerms,
 	setSearchTerms,
 	setSearchResultsSummary,
-	setSearchResultsSummaryLoading
+	searchResultsSummary
 }: Props) => {
 	const [selectedSearchTerms, setSelectedSearchTerms] = useState<
 		SearchTermType[]
@@ -26,7 +27,8 @@ const SearchTerms = ({
 		generateSearchSummaryButtonActive,
 		setGenerateSearchSummaryButtonActive
 	] = useState<Boolean>(false);
-	// console.log("Search terms", searchTerms);
+	const [searchResultsSummaryLoading, setSearchResultsSummaryLoading] =
+		useState<boolean>(false);
 	const handleSearchTermSelection = (searchTerm: SearchTermType) => {
 		setSelectedSearchTerms((prevSelectedSearchTerms) => {
 			if (prevSelectedSearchTerms.some((term) => term.id === searchTerm.id)) {
@@ -57,6 +59,7 @@ const SearchTerms = ({
 		setGenerateSearchSummaryButtonActive(false);
 		setSearchResultsSummary(response.data.searchResultsSummary);
 	};
+
 	useEffect(() => {
 		if (selectedSearchTerms.length === 3) {
 			setGenerateSearchSummaryButtonActive(true);
@@ -64,6 +67,7 @@ const SearchTerms = ({
 			setGenerateSearchSummaryButtonActive(false);
 		}
 	}, [selectedSearchTerms]);
+
 	return (
 		<Card>
 			<CardHeader>
@@ -84,14 +88,25 @@ const SearchTerms = ({
 							handleSearchTermSelection={handleSearchTermSelection}
 						/>
 					))}
-					<Button
-						variant={generateSearchSummaryButtonActive ? "default" : "outline"}
-						disabled={!generateSearchSummaryButtonActive}
-						className="w-full"
-						onClick={() => generateSearchResults()}
-					>
-						Generate search summary
-					</Button>
+					{searchResultsSummary === "" && (
+						<Button
+							variant={
+								generateSearchSummaryButtonActive ? "default" : "outline"
+							}
+							disabled={
+								!generateSearchSummaryButtonActive ||
+								searchResultsSummaryLoading
+							}
+							className="w-full"
+							onClick={() => generateSearchResults()}
+						>
+							{searchResultsSummaryLoading ? (
+								<Loader2 className="animate-spin" />
+							) : (
+								"Generate search summary"
+							)}
+						</Button>
+					)}
 				</div>
 			</CardContent>
 		</Card>

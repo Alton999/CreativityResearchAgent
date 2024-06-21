@@ -1,8 +1,7 @@
 export const maxDuration = 300;
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { searchSummmaryWordware } from "@/lib/searchSummaryWordware";
-import { wordwareSummarise } from "@/lib/wordwareSummarise";
+import { wordwareGenerator } from "@/lib/wordwareGenerator";
 
 type SearchTerm = {
 	searchTerm: string;
@@ -50,10 +49,15 @@ export async function POST(req: Request, res: Response) {
 					return existingSearchResults;
 				} else {
 					console.log("Creating new search results instance");
-					const searchResult = await searchSummmaryWordware({
-						searchTerms: searchTerm.searchTerm,
+					// construct inputs
+					const inputs = {
+						searchTerms: searchTerm.searchTerm
+					};
+					const searchResult = await wordwareGenerator({
+						inputs: inputs,
 						wordwarePromptId: "df77f083-8a4c-4bd7-aeea-c52348fe0383"
 					});
+
 					const newSearchResultInstance = await prisma.searchResults.create({
 						data: {
 							searchTermId: searchTerm.id,
@@ -64,11 +68,16 @@ export async function POST(req: Request, res: Response) {
 				}
 			})
 		);
+		// Join all search results into a single string
 		const searchResultsString = (await searchResultsArray)
 			.map((searchResult: SearchResult) => searchResult.searchResult)
 			.join(" ");
-		const searchResultsSummary = await wordwareSummarise({
-			context: searchResultsString,
+
+		const searchResultSummaryInputs = {
+			searchResults: searchResultsString
+		};
+		const searchResultsSummary = await wordwareGenerator({
+			inputs: searchResultSummaryInputs,
 			wordwarePromptId: "59716311-82a5-4ecc-b125-36fcef1b5d8e"
 		});
 		// Save this summary to the prompt instance

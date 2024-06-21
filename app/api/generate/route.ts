@@ -4,7 +4,9 @@ import { promptInputsSchema } from "@/schemas/promptInputs";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { cookies } from "next/headers";
-import { wordware } from "@/lib/wordware";
+import { wordwareGenerator } from "@/lib/wordwareGenerator";
+import { cleanupStringToJSON } from "@/lib/cleanStringToJSON";
+import { SearchTerm as SearchTermType } from "@/types";
 
 export async function POST(req: Request, res: Response) {
 	const cookieStore = cookies();
@@ -41,13 +43,21 @@ export async function POST(req: Request, res: Response) {
 			}
 		});
 
-		const searchTerms = await wordware({
+		// Construct the input variables to wordware
+		const searchTermsInputs = {
 			question: question,
-			field: field,
+			field: field
+		};
+
+		const searchTerms = await wordwareGenerator({
+			inputs: searchTermsInputs,
 			wordwarePromptId: "1bc52400-ac36-4904-81fd-968baa6b2946"
 		});
 
-		const allSearchTerms = searchTerms.map((term) => {
+		// Expecting search term to be an array of objects
+		const searchTermJSON = JSON.parse(cleanupStringToJSON(searchTerms));
+
+		const allSearchTerms = searchTermJSON.map((term: SearchTermType) => {
 			return {
 				promptId: promptInstance.id,
 				question: question,

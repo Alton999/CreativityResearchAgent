@@ -88,12 +88,12 @@ const SearchTerm = ({
 							{searchTerm.searchTerm}
 						</h4>
 						{searchTerm.newSearchTerm ? (
-							<div className="w-[150px] bg-slate-300/20  rounded-lg h-10 flex items-center justify-center">
+							<div className=" px-4 bg-slate-300/20  rounded-lg h-10 flex items-center justify-center">
 								<p>Regenerated term</p>
 							</div>
 						) : (
-							<div className="w-[150px] bg-slate-300/20 rounded-lg h-10 flex items-center justify-center">
-								<p>Original term</p>
+							<div className="px-4 bg-slate-300/20 rounded-lg h-10 flex items-center justify-center">
+								<p>Original search term</p>
 							</div>
 						)}
 					</div>

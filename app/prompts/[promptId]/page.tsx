@@ -242,16 +242,6 @@ const PromptResults = async ({ params: { promptId } }: Props) => {
 	// 	}
 	// }, [selectedSearchTerms]);
 
-	// const generateSearchResults = async () => {
-	// 	console.log("Prompt search terms:", selectedSearchTerms);
-	// 	setSearchResultsSummaryLoading(true);
-	// 	const response = await axios.post("/api/generate/searchEngine", {
-	// 		searchTermInstance: selectedSearchTerms
-	// 	});
-	// 	console.log("Response from generate search results: ", response);
-	// 	setGenerateSearchSummaryButtonActive(false);
-	// 	setSearchResults(response.data.searchResultsSummary);
-	// };
 	// // Generate initial hypothesis:
 	// const generateInitialHypothesis = async () => {
 	// 	console.log("Prompt search terms:", selectedSearchTerms);
@@ -309,7 +299,7 @@ const PromptResults = async ({ params: { promptId } }: Props) => {
 	//   fetchReinitiation();
 	// }, [hypothesisEvaluation]);
 	if (!prompt) {
-		return <div>Loading...</div>;
+		return <div>No prompts found...</div>;
 	}
 	return (
 		<section className="mt-24 flex flex-col items-center justify-center">

@@ -5,7 +5,7 @@ export async function POST(req: Request, res: Response) {
 	try {
 		// Get new text and update prisma status, expect to receive promptId and edit
 		const { promptId, editedText } = await req.json();
-
+		console.log("Prompt ID: ", promptId);
 		// Update prisma record of the search summary
 		const editedPromptInstance = await prisma.prompt.update({
 			where: {

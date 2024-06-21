@@ -1,33 +1,19 @@
 // const wordwarePromptId = "816acaae-3f3c-473e-b957-125ff26f7c6d";
+import { WordwareGeneration as WordwareGenerationType } from "@/types";
 const wordwareAPI = process.env.WORDWARE_API_KEY;
 
-type SearchSummmaryWordwareType = {
-	searchResults: string;
-	wordwarePromptId: string;
-	researchQuestion: string;
-};
-
-type hypothesisInstanceType = {};
-
-export const hypothesisGeneration = async ({
-	searchResults,
-	wordwarePromptId,
-	researchQuestion
-}: SearchSummmaryWordwareType): Promise<string> => {
+export const wordwareGenerator = async ({
+	inputs,
+	wordwarePromptId
+}: WordwareGenerationType): Promise<string> => {
 	try {
-		console.log(
-			"Wordware: generating hypothesis with these results",
-			searchResults
-		);
+		console.log("Trying wordware", inputs);
 		const data = await fetch(
 			`https://app.wordware.ai/api/prompt/${wordwarePromptId}/run`,
 			{
 				method: "post",
 				body: JSON.stringify({
-					inputs: {
-						search_results: searchResults,
-						research_question: researchQuestion
-					}
+					inputs: inputs
 				}),
 				headers: {
 					Authorization: `Bearer ${wordwareAPI}`
@@ -48,6 +34,7 @@ export const hypothesisGeneration = async ({
 				// if (responseJson.value?.type !== "chunk") {
 				// 	console.log("Response type", responseJson?.value);
 				// }
+				// Check if response is of type generation and label is script. Don't want classification.
 				if (responseJson.value.type === "outputs") {
 					console.log("Response", responseJson.value.values.final);
 					return responseJson.value.values.final;
@@ -57,8 +44,8 @@ export const hypothesisGeneration = async ({
 			})
 			.join("");
 
-		console.log("Summary", summary);
-		// console.log("End fetching");
+		// Should return an array of SearchTerm objects
+
 		return summary;
 	} catch (error) {
 		console.log("Error fetching wordware", error);
