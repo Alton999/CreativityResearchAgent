@@ -16,6 +16,7 @@ type Props = {
 	>;
 	setSearchResultsSummary: React.Dispatch<React.SetStateAction<string>>;
 	promptId: string;
+	hypothesisButtonActive: boolean;
 	// searchResultsSummaryLoading: boolean;
 };
 
@@ -23,13 +24,16 @@ const SearchResultsSummary = ({
 	searchResultsSummary,
 	setHypothesisGeneration,
 	setSearchResultsSummary,
-	promptId
+	promptId,
+	hypothesisButtonActive
 }: // searchResultsSummaryLoading
 Props) => {
 	const [editable, setEditable] = useState<boolean>(false);
 	const [searchSummaryEditLoading, setSearchSummaryEditLoading] =
 		useState<boolean>(false);
 
+	const [hypothesisGenerationLoading, setHypothesisGenerationLoading] =
+		useState<boolean>(false);
 	const handleSave = async () => {
 		setSearchSummaryEditLoading(true);
 		const response = await axios.post("/api/userEdits/searchSummaryEdit", {
@@ -127,10 +131,15 @@ Props) => {
 					</ReactMarkdown>
 				)}
 				<Button
+					disabled={!hypothesisButtonActive || hypothesisGenerationLoading}
 					onClick={() => generateInitialHypothesis()}
 					className="mt-4 w-full"
 				>
-					Generate initial hypothesis
+					{hypothesisGenerationLoading ? (
+						<Loader2 className="animate-spin" />
+					) : (
+						"Generate initial hypothesis"
+					)}
 				</Button>
 			</CardContent>
 		</Card>

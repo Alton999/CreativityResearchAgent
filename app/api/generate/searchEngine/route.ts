@@ -51,7 +51,7 @@ export async function POST(req: Request, res: Response) {
 					console.log("Creating new search results instance");
 					// construct inputs
 					const inputs = {
-						searchTerms: searchTerm.searchTerm
+						search_terms: searchTerm.searchTerm
 					};
 					const searchResult = await wordwareGenerator({
 						inputs: inputs,
@@ -74,7 +74,7 @@ export async function POST(req: Request, res: Response) {
 			.join(" ");
 
 		const searchResultSummaryInputs = {
-			searchResults: searchResultsString
+			context: searchResultsString
 		};
 		const searchResultsSummary = await wordwareGenerator({
 			inputs: searchResultSummaryInputs,

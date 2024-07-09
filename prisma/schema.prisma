@@ -27,7 +27,7 @@ model Prompt {
   createdAt            DateTime               @default(now())
   searchResultsSummary String                 @default("")
   hypothesisGeneration HypothesisGeneration[]
-  Reinitiator          Reinitiator[]
+  // Reinitiator          Reinitiator[]
   searchTerms          SearchTerms[]
   user                 User                   @relation(fields: [userId], references: [id])
 
@@ -46,7 +46,6 @@ model SearchTerms {
   SearchResults SearchResults[]
   prompt        Prompt          @relation(fields: [promptId], references: [id])
 
-  @@unique([promptId, searchTerm])
   @@index([promptId])
 }
 
@@ -57,28 +56,41 @@ model SearchResults {
   searchTermId String
   searchTerms  SearchTerms @relation(fields: [searchTermId], references: [id])
 
-  @@unique([searchTermId, searchResult])
+  // @@unique([searchTermId, searchResult])
   @@index([searchTermId])
 }
 
 model HypothesisGeneration {
-  id         String   @id @default(cuid())
-  promptId   String
-  hypothesis String
-  createdAt  DateTime @default(now())
-  prompt     Prompt   @relation(fields: [promptId], references: [id])
+  id                  String              @id @default(cuid())
+  promptId            String
+  hypothesis          String
+  proposedExperiments String              @default("")
+  forcedAssociations  ForcedAssociation[]
+  createdAt           DateTime            @default(now())
+  prompt              Prompt              @relation(fields: [promptId], references: [id])
 
-  @@unique([promptId, hypothesis])
+  // @@unique([hypothesis])
   @@index([promptId])
 }
 
-model Reinitiator {
-  id           String   @id @default(cuid())
-  promptId     String
-  reinitiation String
-  createdAt    DateTime @default(now())
-  prompt       Prompt   @relation(fields: [promptId], references: [id])
+model ForcedAssociation {
+  id                     String               @id @default(cuid())
+  HypothesisGenerationId String
+  association            String
+  createdAt              DateTime             @default(now())
+  hypothesisGeneration   HypothesisGeneration @relation(fields: [HypothesisGenerationId], references: [id])
 
-  @@unique([promptId, reinitiation])
-  @@index([promptId])
+  // @@unique([association])
+  @@index([HypothesisGenerationId])
 }
+
+// model Reinitiator {
+//   id           String   @id @default(cuid())
+//   promptId     String
+//   reinitiation String
+//   createdAt    DateTime @default(now())
+//   prompt       Prompt   @relation(fields: [promptId], references: [id])
+
+//   @@unique([promptId, reinitiation])
+//   @@index([promptId])
+// }

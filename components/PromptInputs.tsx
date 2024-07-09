@@ -87,7 +87,6 @@ const PromptInputs = () => {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="field"

@@ -1,17 +1,11 @@
 export const maxDuration = 300;
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { hypothesisGeneration } from "@/lib/hypothesisGeneration";
+// import { hypothesisGeneration } from "@/lib/hypothesisGeneration";
 import { cleanupStringToJSON } from "@/lib/cleanStringToJSON";
 import { HypothesisGeneration as HypothesisGenerationTypes } from "@/types";
 import { wordwareGenerator } from "@/lib/wordwareGenerator";
-// type PromptInstance = {
-// 	searchResultsSummary: string;
-// 	researchQuestion: string;
-// 	id: string;
-// 	userId: string;
-// 	researchField: string;
-// };
+
 export async function POST(req: Request, res: Response) {
 	try {
 		console.log("Request from hypothesis generator");

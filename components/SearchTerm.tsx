@@ -1,21 +1,11 @@
 "use client";
 
-import {
-	Form,
-	FormField,
-	FormItem,
-	FormControl,
-	FormMessage
-} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Divide, LoaderCircle } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { LoaderCircle } from "lucide-react";
 import { z } from "zod";
 import { feedbackSchema } from "@/schemas/feedback";
 import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { SearchTerm as SearchTermType } from "@/types";

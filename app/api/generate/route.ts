@@ -45,8 +45,8 @@ export async function POST(req: Request, res: Response) {
 
 		// Construct the input variables to wordware
 		const searchTermsInputs = {
-			question: question,
-			field: field
+			research_question: question,
+			fields: field
 		};
 
 		const searchTerms = await wordwareGenerator({

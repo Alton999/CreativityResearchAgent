@@ -30,20 +30,6 @@ export async function POST(req: Request, res: Response) {
 				newSearchTerm: true
 			}
 		});
-		// const allSearchTerms = searchTerms.map((term) => {
-		// 	return {
-		// 		promptId: promptInstance.id,
-		// 		question: question,
-		// 		field: field,
-		// 		searchTerm: term.searchTerm,
-		// 		explanation: term.explanation
-		// 	};
-		// });
-		// await prisma.searchTerms.createMany({
-		// 	data: allSearchTerms
-		// });
-
-		// const promptId = promptInstance.id;
 		return NextResponse.json({ searchTermInstance: newSearchTermInstance });
 	} catch (error: any) {
 		console.error("Error creating prompt:");

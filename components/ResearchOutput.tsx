@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	PromptType,
 	SearchTerm as SearchTermType,
@@ -24,6 +24,18 @@ const ResearchOutput = ({ prompt }: Props) => {
 		HypothesisGenerationTypes[]
 	>(prompt.hypothesisGeneration);
 
+	const [hypothesisButtonActive, setSetHypothesisButtonActive] =
+		useState<boolean>(false);
+
+	useEffect(() => {
+		console.log("Hypothesis generation", hypothesisGeneration);
+		if (searchResultsSummary.length > 0) {
+			setSetHypothesisButtonActive(true);
+		}
+		if (hypothesisGeneration.length > 0) {
+			setSetHypothesisButtonActive(false);
+		}
+	}, [hypothesisGeneration, searchResultsSummary]);
 	return (
 		<div className="space-y-8">
 			<SearchTerms
@@ -38,12 +50,16 @@ const ResearchOutput = ({ prompt }: Props) => {
 					setHypothesisGeneration={setHypothesisGeneration}
 					setSearchResultsSummary={setSearchResultsSummary}
 					promptId={prompt.id}
+					hypothesisButtonActive={hypothesisButtonActive}
 				/>
 			)}
 			{
 				// Display hypothesis generation
 				hypothesisGeneration.length > 0 && (
-					<HypothesisGenerated hypothesisGeneration={hypothesisGeneration} />
+					<HypothesisGenerated
+						hypothesisGeneration={hypothesisGeneration}
+						setHypothesisGeneration={setHypothesisGeneration}
+					/>
 				)
 			}
 		</div>

@@ -21,6 +21,7 @@ export type HypothesisGeneration = {
 	id: string;
 	promptId: string;
 	hypothesis: string;
+	proposedExperiments: string;
 	createdAt: string;
 };
 
