@@ -11,9 +11,7 @@ type Props = {
 	setActionToggleOpen: React.Dispatch<React.SetStateAction<string>>;
 	setIsAssociationLoading: React.Dispatch<React.SetStateAction<boolean>>;
 	hypothesisId: string;
-	setHypothesisInstance: React.Dispatch<
-		React.SetStateAction<HypothesisGenerationTypes>
-	>;
+
 	isExperimentLoading: boolean;
 	promptId: string;
 };
@@ -22,7 +20,6 @@ const ForcedAssociationModal = ({
 	setActionToggleOpen,
 	hypothesisId,
 	setIsAssociationLoading,
-	setHypothesisInstance,
 	promptId
 }: Props) => {
 	const [hypothesisLoading, setHypothesisLoading] = useState<boolean>(false);
@@ -48,7 +45,13 @@ const ForcedAssociationModal = ({
 	const generateAssociation = async () => {
 		setActionToggleOpen("");
 		setIsAssociationLoading(true);
-
+		const response = await axios.post(
+			"/api/hypothesisActions/generateAssociations",
+			{
+				selectedHypothesis,
+				reframeResearchQuestionSelected
+			}
+		);
 		// const response = await axios.post(
 		// 	"/api/hypothesisActions/generateExperiment",
 		// 	{

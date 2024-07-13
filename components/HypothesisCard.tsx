@@ -27,7 +27,6 @@ const HypothesisCard = ({
 	const [hypothesisInstance, setHypothesisInstance] =
 		useState<HypothesisGenerationTypes>(hypothesis);
 
-	const [accordionOpen, setAccordionOpen] = useState<string>("");
 	const [actionToggleOpen, setActionToggleOpen] = useState<string>("");
 	const [selectedAction, setSelectedAction] = useState<string>("");
 	const [experimentAccordionOpen, setExperimentAccordionOpen] =
@@ -39,13 +38,7 @@ const HypothesisCard = ({
 		});
 		setHypothesisGeneration(response.data.hypothesisGenerationArray);
 	};
-	const accordionToggle = (hypothesisId: string) => {
-		if (hypothesisId === accordionOpen) {
-			setAccordionOpen("");
-		} else {
-			setAccordionOpen(hypothesisId);
-		}
-	};
+
 	const actionToggle = (hypothesisId: string, actionType: string) => {
 		if (hypothesisId === actionToggleOpen && actionType === selectedAction) {
 			setActionToggleOpen("");
@@ -83,7 +76,6 @@ const HypothesisCard = ({
 						setActionToggleOpen={setActionToggleOpen}
 						isExperimentLoading={isExperimentLoading}
 						setIsAssociationLoading={setIsAssociationLoading}
-						setHypothesisInstance={setHypothesisInstance}
 						promptId={hypothesisInstance.promptId}
 						hypothesisId={hypothesisId}
 					/>
@@ -102,13 +94,14 @@ const HypothesisCard = ({
 						variant={"outline"}
 						className="py-4 flex gap-2 items-center px-2 rounded-lg text-red-500"
 						onClick={
-							() => {
-								setIsExperimentLoading(true);
-							}
-							// deleteHypothesis(
-							// 	hypothesisInstance.id,
-							// 	hypothesisInstance.promptId
-							// )
+							// () => {
+							// 	setIsExperimentLoading(true);
+							// }
+							() =>
+								deleteHypothesis(
+									hypothesisInstance.id,
+									hypothesisInstance.promptId
+								)
 						}
 					>
 						Remove hypothesis
@@ -204,7 +197,7 @@ const HypothesisCard = ({
 			)}
 
 			{/* Expandable actions for hypothesis regeneration */}
-			<div className="w-full flex justify-end py-2">
+			{/* <div className="w-full flex justify-end py-2">
 				<div
 					onClick={() => accordionToggle(hypothesisInstance.id)}
 					className="cursor-pointer flex gap-2"
@@ -212,28 +205,27 @@ const HypothesisCard = ({
 					<span>Show actions</span>
 					<ChevronDown size={24} />
 				</div>
+			</div> */}
+
+			<div className="flex flex-col gap-4">
+				<h3 className="font-bold">Hypothesis regeneration actions:</h3>
+				<div className="flex gap-4">
+					<Button
+						variant={"outline"}
+						onClick={() => actionToggle(hypothesisInstance.id, "experiment")}
+					>
+						Generate experiments
+					</Button>
+					<Button
+						variant={"outline"}
+						onClick={() => actionToggle(hypothesisInstance.id, "association")}
+					>
+						Forced association
+					</Button>
+					<Button variant={"outline"}>Evaluate hypothesis</Button>
+				</div>
 			</div>
 
-			{accordionOpen === hypothesisInstance.id && (
-				<div className="flex flex-col gap-4">
-					<h3 className="font-bold">Hypothesis regeneration actions:</h3>
-					<div className="flex gap-4">
-						<Button
-							variant={"outline"}
-							onClick={() => actionToggle(hypothesisInstance.id, "experiment")}
-						>
-							Generate experiments
-						</Button>
-						<Button
-							variant={"outline"}
-							onClick={() => actionToggle(hypothesisInstance.id, "association")}
-						>
-							Forced association
-						</Button>
-						<Button variant={"outline"}>Evaluate hypothesis</Button>
-					</div>
-				</div>
-			)}
 			{actionToggleOpen === hypothesisInstance.id &&
 				renderActionComponent(selectedAction, hypothesisInstance.id)}
 		</div>

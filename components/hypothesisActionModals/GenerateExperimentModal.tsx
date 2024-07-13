@@ -4,6 +4,7 @@ import { Button } from "../ui/button";
 import axios from "axios";
 import { HypothesisGeneration as HypothesisGenerationTypes } from "@/types";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 
 type Props = {
 	setActionToggleOpen: React.Dispatch<React.SetStateAction<string>>;
@@ -21,8 +22,10 @@ const GenerateExperimentModal = ({
 	setIsExperimentLoading,
 	setHypothesisInstance
 }: Props) => {
+	const { toast } = useToast();
+
 	const [instructions, setInstructions] = useState<string>("");
-	const generateFeedback = async () => {
+	const generateExperiment = async () => {
 		setActionToggleOpen("");
 		setIsExperimentLoading(true);
 		const response = await axios.post(
@@ -33,6 +36,12 @@ const GenerateExperimentModal = ({
 			}
 		);
 		setIsExperimentLoading(false);
+		toast({
+			title: "Experiment generated successfully",
+			variant: "success",
+			description:
+				"Check out the generated experiment attached to the hypothesis."
+		});
 		setHypothesisInstance(response.data.updatedHypothesisGeneration);
 	};
 	return (
@@ -48,7 +57,14 @@ const GenerateExperimentModal = ({
 				// className="border border-primary rounded-lg bg-slate-100 p-1.5"
 				onChange={(e) => setInstructions(e.target.value)}
 			/>
-			<Button onClick={() => generateFeedback()}>Generate Experiment</Button>
+			<Button
+				onClick={() => {
+					// console.log("Button pressed");
+					generateExperiment();
+				}}
+			>
+				Generate Experiment
+			</Button>
 		</ModalLayout>
 	);
 };
