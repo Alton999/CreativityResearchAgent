@@ -12,7 +12,6 @@ type Props = {
 	setIsAssociationLoading: React.Dispatch<React.SetStateAction<boolean>>;
 	hypothesisId: string;
 
-	isExperimentLoading: boolean;
 	promptId: string;
 };
 

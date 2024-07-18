@@ -8,18 +8,17 @@ import { useToast } from "@/components/ui/use-toast";
 
 type Props = {
 	setActionToggleOpen: React.Dispatch<React.SetStateAction<string>>;
-	setIsExperimentLoading: React.Dispatch<React.SetStateAction<boolean>>;
+	setExperimentGenerationStatus: React.Dispatch<React.SetStateAction<string>>;
 	hypothesisId: string;
 	setHypothesisInstance: React.Dispatch<
 		React.SetStateAction<HypothesisGenerationTypes>
 	>;
-	isExperimentLoading: boolean;
 };
 
 const GenerateExperimentModal = ({
 	setActionToggleOpen,
 	hypothesisId,
-	setIsExperimentLoading,
+	setExperimentGenerationStatus,
 	setHypothesisInstance
 }: Props) => {
 	const { toast } = useToast();
@@ -27,7 +26,7 @@ const GenerateExperimentModal = ({
 	const [instructions, setInstructions] = useState<string>("");
 	const generateExperiment = async () => {
 		setActionToggleOpen("");
-		setIsExperimentLoading(true);
+		setExperimentGenerationStatus("loading");
 		const response = await axios.post(
 			"/api/hypothesisActions/generateExperiment",
 			{
@@ -35,7 +34,7 @@ const GenerateExperimentModal = ({
 				instructions
 			}
 		);
-		setIsExperimentLoading(false);
+		setExperimentGenerationStatus("done");
 		toast({
 			title: "Experiment generated successfully",
 			variant: "success",

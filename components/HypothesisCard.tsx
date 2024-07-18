@@ -31,6 +31,7 @@ const HypothesisCard = ({
 	const [selectedAction, setSelectedAction] = useState<string>("");
 	const [experimentAccordionOpen, setExperimentAccordionOpen] =
 		useState<boolean>(false);
+
 	const deleteHypothesis = async (hypothesisId: string, promptId: string) => {
 		const response = await axios.post("/api/deleteHypothesis", {
 			hypothesisId,
@@ -50,11 +51,16 @@ const HypothesisCard = ({
 
 	// We can handle action methods here
 	// Experiment generation
-	const [isExperimentLoading, setIsExperimentLoading] =
-		useState<boolean>(false);
+	const [experimentGenerationStatus, setExperimentGenerationStatus] =
+		useState<string>("");
 	const [isAssociationLoading, setIsAssociationLoading] =
 		useState<boolean>(false);
 
+	useEffect(() => {
+		if (hypothesis.proposedExperiments !== "") {
+			setExperimentGenerationStatus("generated");
+		}
+	}, [hypothesis]);
 	const renderActionComponent = (
 		selectedAction: string,
 		hypothesisId: string
@@ -64,8 +70,7 @@ const HypothesisCard = ({
 				return (
 					<GenerateExperimentModal
 						setActionToggleOpen={setActionToggleOpen}
-						isExperimentLoading={isExperimentLoading}
-						setIsExperimentLoading={setIsExperimentLoading}
+						setExperimentGenerationStatus={setExperimentGenerationStatus}
 						setHypothesisInstance={setHypothesisInstance}
 						hypothesisId={hypothesisId}
 					/>
@@ -74,7 +79,6 @@ const HypothesisCard = ({
 				return (
 					<ForcedAssociationModal
 						setActionToggleOpen={setActionToggleOpen}
-						isExperimentLoading={isExperimentLoading}
 						setIsAssociationLoading={setIsAssociationLoading}
 						promptId={hypothesisInstance.promptId}
 						hypothesisId={hypothesisId}
@@ -93,15 +97,11 @@ const HypothesisCard = ({
 					<Button
 						variant={"outline"}
 						className="py-4 flex gap-2 items-center px-2 rounded-lg text-red-500"
-						onClick={
-							// () => {
-							// 	setIsExperimentLoading(true);
-							// }
-							() =>
-								deleteHypothesis(
-									hypothesisInstance.id,
-									hypothesisInstance.promptId
-								)
+						onClick={() =>
+							deleteHypothesis(
+								hypothesisInstance.id,
+								hypothesisInstance.promptId
+							)
 						}
 					>
 						Remove hypothesis
@@ -112,26 +112,34 @@ const HypothesisCard = ({
 			<p>{hypothesisInstance.hypothesis}</p>
 
 			{/* Experiments show if exists or loading */}
-			{(isExperimentLoading ||
+			{(experimentGenerationStatus !== "" ||
 				hypothesisInstance.proposedExperiments !== "") && (
 				<div className="border rounded-lg p-4 my-4">
 					<div
 						className={`w-full flex justify-between ${
-							!isExperimentLoading && "cursor-pointer"
+							experimentGenerationStatus !== "" &&
+							experimentGenerationStatus !== "loading" &&
+							"cursor-pointer"
 						}`}
 						onClick={() => {
-							if (!isExperimentLoading)
+							if (experimentGenerationStatus !== "loading")
 								setExperimentAccordionOpen(!experimentAccordionOpen);
 						}}
 					>
-						<p className="font-bold text-lg">Experiment design document</p>
-						{isExperimentLoading ? (
-							<div className="flex gap-2 border border-green-500 bg-green-100 py-2 px-4 rounded-full">
-								<p className="font-bold text-green-800">Designing experiment</p>
-								<Loader2 color="green" className="animate-spin" size={24} />
+						<h2 className="font-bold text-lg">Experiment design document</h2>
+						{experimentGenerationStatus === "loading" ? (
+							<div className="flex gap-2 border border-amber-500 bg-amber-100 py-2 px-4 rounded-full">
+								<p className="font-bold text-amber-800">Designing experiment</p>
+								<Loader2 color="orange" className="animate-spin" size={24} />
 							</div>
 						) : (
-							<div className="flex gap-2 border border-slate-500 bg-slate-100 py-2 px-4 rounded-full">
+							<div
+								className={`flex gap-2 border ${
+									experimentGenerationStatus === "done"
+										? "border-green-800 bg-green-100"
+										: "border-slate-500 bg-slate-100"
+								}  py-2 px-4 rounded-full`}
+							>
 								<p className="font-bold text-slate-800">
 									{experimentAccordionOpen
 										? "Hide experiment"
@@ -195,17 +203,6 @@ const HypothesisCard = ({
 					)}
 				</div>
 			)}
-
-			{/* Expandable actions for hypothesis regeneration */}
-			{/* <div className="w-full flex justify-end py-2">
-				<div
-					onClick={() => accordionToggle(hypothesisInstance.id)}
-					className="cursor-pointer flex gap-2"
-				>
-					<span>Show actions</span>
-					<ChevronDown size={24} />
-				</div>
-			</div> */}
 
 			<div className="flex flex-col gap-4">
 				<h3 className="font-bold">Hypothesis regeneration actions:</h3>
