@@ -3,19 +3,12 @@
 // Page used for redirection to the correct page
 import {
 	Card,
-	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle
 } from "@/components/ui/card";
 import ResearchOutput from "@/components/ResearchOutput";
-import axios from "axios";
-import SearchTerm from "@/components/SearchTerm";
-import FetchLoading from "@/components/FetchLoading";
-import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { PromptType } from "@/types";
 

@@ -8,17 +8,14 @@ import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "../ui/scroll-area";
 
 type Props = {
-	setActionToggleOpen: React.Dispatch<React.SetStateAction<string>>;
-	setIsAssociationLoading: React.Dispatch<React.SetStateAction<boolean>>;
-	hypothesisId: string;
-
+	setShowHypothesisModal: React.Dispatch<React.SetStateAction<boolean>>;
+	setAssociationGenerationStatus: React.Dispatch<React.SetStateAction<string>>;
 	promptId: string;
 };
 
 const ForcedAssociationModal = ({
-	setActionToggleOpen,
-	hypothesisId,
-	setIsAssociationLoading,
+	setShowHypothesisModal,
+	setAssociationGenerationStatus,
 	promptId
 }: Props) => {
 	const [hypothesisLoading, setHypothesisLoading] = useState<boolean>(false);
@@ -42,8 +39,8 @@ const ForcedAssociationModal = ({
 		});
 	};
 	const generateAssociation = async () => {
-		setActionToggleOpen("");
-		setIsAssociationLoading(true);
+		setShowHypothesisModal(false);
+		setAssociationGenerationStatus("loading");
 		const response = await axios.post(
 			"/api/hypothesisActions/generateAssociations",
 			{
@@ -58,15 +55,17 @@ const ForcedAssociationModal = ({
 		// 		instructions
 		// 	}
 		// );
-		setIsAssociationLoading(false);
+		setAssociationGenerationStatus("loading");
 		// setHypothesisInstance(response.data.updatedHypothesisGeneration);
 	};
+
 	// Track button enable state
 	useEffect(() => {
 		if (selectedHypothesis.length > 2) {
 			setGenerateAssociationButtonActive(true);
 		}
 	}, [selectedHypothesis]);
+
 	useEffect(() => {
 		const fetchAllHypothesis = async () => {
 			setHypothesisLoading(true);
@@ -78,11 +77,11 @@ const ForcedAssociationModal = ({
 			setHypothesisLoading(false);
 		};
 		fetchAllHypothesis();
-	}, [hypothesisId, promptId]);
+	}, [promptId]);
 	return (
 		<ModalLayout
 			title="Forced association"
-			closeModal={() => setActionToggleOpen("")}
+			closeModal={() => setShowHypothesisModal(false)}
 		>
 			<p>
 				In this action you as the lead scientist is able to find connections,

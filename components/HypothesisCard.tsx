@@ -53,8 +53,6 @@ const HypothesisCard = ({
 	// Experiment generation
 	const [experimentGenerationStatus, setExperimentGenerationStatus] =
 		useState<string>("");
-	const [isAssociationLoading, setIsAssociationLoading] =
-		useState<boolean>(false);
 
 	useEffect(() => {
 		if (hypothesis.proposedExperiments !== "") {
@@ -72,15 +70,6 @@ const HypothesisCard = ({
 						setActionToggleOpen={setActionToggleOpen}
 						setExperimentGenerationStatus={setExperimentGenerationStatus}
 						setHypothesisInstance={setHypothesisInstance}
-						hypothesisId={hypothesisId}
-					/>
-				);
-			case "association":
-				return (
-					<ForcedAssociationModal
-						setActionToggleOpen={setActionToggleOpen}
-						setIsAssociationLoading={setIsAssociationLoading}
-						promptId={hypothesisInstance.promptId}
 						hypothesisId={hypothesisId}
 					/>
 				);
@@ -212,12 +201,6 @@ const HypothesisCard = ({
 						onClick={() => actionToggle(hypothesisInstance.id, "experiment")}
 					>
 						Generate experiments
-					</Button>
-					<Button
-						variant={"outline"}
-						onClick={() => actionToggle(hypothesisInstance.id, "association")}
-					>
-						Forced association
 					</Button>
 					<Button variant={"outline"}>Evaluate hypothesis</Button>
 				</div>
