@@ -12,11 +12,11 @@ import {
 
 import { HypothesisGeneration as HypothesisGenerationTypes } from "@/types";
 import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
-import axios from "axios";
+import { Loader2, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import HypothesisCard from "../HypothesisCard";
 import ForcedAssociationModal from "../hypothesisActionModals/ForcedAssociationModal";
+import NewHypothesisModal from "../hypothesisActionModals/NewHypothesisModal";
 
 type Props = {
 	hypothesisGeneration: HypothesisGenerationTypes[];
@@ -29,10 +29,13 @@ const HypothesisGenerated = ({
 	hypothesisGeneration,
 	setHypothesisGeneration
 }: Props) => {
-	const [showHypothesisModal, setShowHypothesisModal] =
-		useState<boolean>(false);
-	const [associationGenerationStatus, setAssociationGenerationStatus] =
-		useState<string>("");
+	const [
+		selectedHypothesisGenerationModal,
+		setSelectedHypothesisGenerationModal
+	] = useState<string>("");
+
+	const [newHypothesisStatus, setNewHypothesisStatus] = useState<string>("");
+
 	return (
 		<>
 			<Card>
@@ -41,8 +44,8 @@ const HypothesisGenerated = ({
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button>
-								Create new hypothesis
-								<Plus className="ml-2" color="white" size="24" />
+								Generate new hypothesis
+								<Plus className="ml-3" color="white" size="24" />
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent>
@@ -50,14 +53,26 @@ const HypothesisGenerated = ({
 								Hypothesis generation actions
 							</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem>Fresh hypothesis</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setShowHypothesisModal(true)}>
+							<DropdownMenuItem
+								onClick={() =>
+									setSelectedHypothesisGenerationModal("new hypothesis")
+								}
+							>
+								Fresh hypothesis
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() =>
+									setSelectedHypothesisGenerationModal("forced association")
+								}
+							>
 								Forced hypothesis association
 							</DropdownMenuItem>
 							<DropdownMenuItem>
 								Branch off existing hypothesis
 							</DropdownMenuItem>
-							<DropdownMenuItem>Domain expansion</DropdownMenuItem>
+							<DropdownMenuItem disabled>
+								Domain expansion [Coming soon]
+							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</CardHeader>
@@ -71,17 +86,46 @@ const HypothesisGenerated = ({
 								setHypothesisGeneration={setHypothesisGeneration}
 							/>
 						))}
+						{
+							// Show the loading hypothesis if loading state
+							newHypothesisStatus === "loading" && (
+								<motion.div
+									initial={{ scale: 0 }}
+									animate={{ scale: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 0.5 }}
+									className="w-full border border-amber-500 bg-amber-100 p-4 rounded-lg shadow-md flex justify-between"
+								>
+									<h1 className="text-lg font-bold text-amber-800">
+										New hypothesis loading...
+									</h1>
+									<Loader2 className="animate-spin" color="orange" size={24} />
+								</motion.div>
+							)
+						}
 					</div>
-
 					{/* <Button className="mt-4 w-full">Generate initial hypothesis</Button> */}
 				</CardContent>
 			</Card>
 			{/* display modal component */}
-			{showHypothesisModal && (
+			{selectedHypothesisGenerationModal === "forced association" && (
 				<ForcedAssociationModal
-					setShowHypothesisModal={setShowHypothesisModal}
+					setSelectedHypothesisGenerationModal={
+						setSelectedHypothesisGenerationModal
+					}
 					promptId={hypothesisGeneration[0].promptId}
-					setAssociationGenerationStatus={setAssociationGenerationStatus}
+					setNewHypothesisStatus={setNewHypothesisStatus}
+					setHypothesisGeneration={setHypothesisGeneration}
+				/>
+			)}
+			{selectedHypothesisGenerationModal === "new hypothesis" && (
+				<NewHypothesisModal
+					setSelectedHypothesisGenerationModal={
+						setSelectedHypothesisGenerationModal
+					}
+					promptId={hypothesisGeneration[0].promptId}
+					setNewHypothesisStatus={setNewHypothesisStatus}
+					setHypothesisGeneration={setHypothesisGeneration}
 				/>
 			)}
 		</>

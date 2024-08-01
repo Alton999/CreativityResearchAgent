@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 
 import axios from "axios";
 import GenerateExperimentModal from "./hypothesisActionModals/GenerateExperimentModal";
-import ForcedAssociationModal from "./hypothesisActionModals/ForcedAssociationModal";
 import { Trash2, ChevronDown, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { HypothesisGeneration as HypothesisGenerationTypes } from "@/types";
@@ -93,7 +92,6 @@ const HypothesisCard = ({
 							)
 						}
 					>
-						Remove hypothesis
 						<Trash2 size={16} color="red" />
 					</Button>
 				</div>
@@ -193,7 +191,7 @@ const HypothesisCard = ({
 				</div>
 			)}
 
-			<div className="flex flex-col gap-4">
+			<div className="flex flex-col gap-4 mt-4">
 				<h3 className="font-bold">Hypothesis regeneration actions:</h3>
 				<div className="flex gap-4">
 					<Button
@@ -202,7 +200,7 @@ const HypothesisCard = ({
 					>
 						Generate experiments
 					</Button>
-					<Button variant={"outline"}>Evaluate hypothesis</Button>
+					{/* <Button variant={"outline"}>Evaluate hypothesis</Button> */}
 				</div>
 			</div>
 

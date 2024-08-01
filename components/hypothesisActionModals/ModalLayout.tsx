@@ -17,7 +17,7 @@ const ModalLayout = ({ title, children, closeModal }: Props) => {
 			<div className="bg-white w-[600px] h-150 p-6 rounded-lg shadow-lg z-10">
 				<div className="flex w-full flex-col gap-4">
 					<div className="flex justify-between">
-						<h4 className="text-lg font-bold">Generate experiments</h4>
+						<h4 className="text-lg font-bold">{title}</h4>
 
 						<button className="cursor-pointer hover:bg-slate-100">
 							<X size={24} onClick={closeModal} />

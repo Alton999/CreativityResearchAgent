@@ -5,57 +5,52 @@ import { cleanupStringToJSON } from "@/lib/cleanStringToJSON";
 
 export async function POST(req: Request, res: Response) {
 	try {
-		const { selectedHypothesis, reframeResearchQuestionSelected } =
-			await req.json();
-		console.log("Selected Hypothesis:", selectedHypothesis);
+		let { instructions, promptId } = await req.json();
 		console.log(
-			"Reframe Research Question Selected:",
-			reframeResearchQuestionSelected
+			"Generating new hypothesis with these instructions: ",
+			instructions
 		);
 
-		// selected hypothesis is a list of hypothesis ids
-		// fetch all hypothesis
-		const hypothesisGenerationArray =
-			await prisma.hypothesisGeneration.findMany({
-				where: {
-					id: {
-						in: selectedHypothesis
-					}
-				},
-				select: {
-					promptId: true,
-					hypothesis: true
-				}
-			});
+		// fetch all hypothesis associated with the prompt
+		const hypothesisInPrompt = await prisma.hypothesisGeneration.findMany({
+			where: {
+				promptId: promptId
+			},
+			select: {
+				hypothesis: true
+			}
+		});
+
 		// Extract the hypothesis into an array
-		const hypotheses = hypothesisGenerationArray.map((h) => h.hypothesis);
+		const hypotheses = hypothesisInPrompt.map((h) => h.hypothesis);
 
 		// Fetch the prompt
 		const prompt = await prisma.prompt.findUnique({
 			where: {
-				id: hypothesisGenerationArray[0].promptId
+				id: promptId
 			}
 		});
 		if (!prompt) return NextResponse.json({ error: "Prompt not found" });
 
 		// console.log("Hypothesis Generation Array:", hypotheses);
-
+		if (instructions === "") {
+			instructions = "No specific instructions";
+		}
 		// Create inputs for wordware
 		const inputs = {
 			all_hypothesis: hypotheses,
 			search_results: prompt.searchResultsSummary,
 			research_question: prompt.researchQuestion,
-			instructions: "No specific instructions",
-			reframe_research_question: reframeResearchQuestionSelected
+			instructions: instructions
 		};
+		console.log;
 		const newHypothesis = await wordwareGenerator({
 			inputs: inputs,
-			wordwarePromptId: "1a8452aa-f040-4703-ba9e-b9a28fdc6d44"
+			wordwarePromptId: "7c078190-b478-4eb5-999d-36e70fd00b3c"
 		});
 
 		// console.log("Raw string output", newHypothesis);
 		const hypothesisJson = JSON.parse(cleanupStringToJSON(newHypothesis, ""));
-		console.log("Associations wordware response", hypothesisJson);
 		// Create the new hypothesis
 		await prisma.hypothesisGeneration.create({
 			data: {

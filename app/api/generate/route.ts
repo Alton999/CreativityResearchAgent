@@ -55,7 +55,9 @@ export async function POST(req: Request, res: Response) {
 		});
 
 		// Expecting search term to be an array of objects
-		const searchTermJSON = JSON.parse(cleanupStringToJSON(searchTerms));
+		const searchTermJSON = JSON.parse(
+			cleanupStringToJSON(searchTerms, "array")
+		);
 
 		const allSearchTerms = searchTermJSON.map((term: SearchTermType) => {
 			return {

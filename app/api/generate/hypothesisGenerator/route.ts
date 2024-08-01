@@ -34,7 +34,7 @@ export async function POST(req: Request, res: Response) {
 		console.log("Hypothesis:", hypothesis);
 
 		// Using ANY type just for output from wordware
-		const hypothesisJson = JSON.parse(cleanupStringToJSON(hypothesis));
+		const hypothesisJson = JSON.parse(cleanupStringToJSON(hypothesis, "array"));
 		const hypothesisArray = hypothesisJson.map(
 			(hypothesis: HypothesisGenerationTypes) => {
 				return {

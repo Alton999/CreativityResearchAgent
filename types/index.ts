@@ -6,7 +6,19 @@ export type SearchTerm = {
 	promptId: string;
 	searchTerm: string;
 	explanation: string;
+	savedPapers: SavedPaper[];
 	newSearchTerm: boolean;
+};
+
+export type SavedPaper = {
+	id: string;
+	paperId: string;
+	title: string;
+	authors: string[];
+	abstract: string;
+	year: number;
+	url: string;
+	searchTermId: string;
 };
 
 export type SearchResult = {

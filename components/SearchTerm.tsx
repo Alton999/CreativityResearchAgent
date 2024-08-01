@@ -9,7 +9,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { SearchTerm as SearchTermType } from "@/types";
-
+import { SavedPaper as SavedPaperTypes } from "@/types";
 type Input = z.infer<typeof feedbackSchema>;
 
 type SearchTermProps = {
@@ -24,11 +24,12 @@ const SearchTerm = ({
 	selectedSearchTerms,
 	handleSearchTermSelection
 }: SearchTermProps) => {
-	const [status, setStatus] = useState<string | null>(null);
+	const [loadingPaperStatus, setLoadingPaperStatus] = useState<string>("");
 	const [isOpen, setIsOpen] = useState(false);
 	const [isSelected, setIsSelected] = useState(false);
 	const [feedbackLoading, setFeedbackLoading] = useState(false);
-
+	console.log("Search term", searchTerm);
+	const [savedPapers, setSavedPapers] = useState(searchTerm.savedPapers);
 	const className = `border text-card-foreground p-8 cursor-pointer rounded-xl ${
 		isSelected ? "shadow-xl" : ""
 	}`;
@@ -63,6 +64,18 @@ const SearchTerm = ({
 		setFeedback("");
 		addNewSearchTerm(newSearchTerm);
 	};
+	const fetchResearchPaper = async () => {
+		const response = await axios.post("/api/getResearchFromSearchTerms", {
+			searchTerm
+		});
+		setSavedPapers(response.data.allPapers);
+		console.log("Response from fetchResearchPaper: ", response);
+	};
+	useEffect(() => {
+		if (!searchTerm.savedPapers) {
+			setLoadingPaperStatus("done");
+		}
+	}, [searchTerm.savedPapers]);
 	return (
 		<div>
 			<motion.div
@@ -89,11 +102,25 @@ const SearchTerm = ({
 					</div>
 					<p>Reasoning: {searchTerm.explanation}</p>
 				</div>
-				<div className="w-full grid place-items-end my-2">
+				<div className="w-full flex justify-end gap-4 my-2">
+					{/* <Button onClick={() => fetchResearchPaper()}>Do search</Button> */}
 					<Button onClick={() => setIsOpen(!isOpen)}>
 						{isOpen ? "Close" : "Feedback"}
 					</Button>
 				</div>
+				{savedPapers && (
+					<motion.div>
+						<h4 className="text-lg font-bold">Saved papers</h4>
+						<div>
+							{savedPapers.map((paper: SavedPaperTypes) => (
+								<div key={paper.id} className="flex gap-4 items-center">
+									<p>{paper.title}</p>
+									<p>{paper.authors}</p>
+								</div>
+							))}
+						</div>
+					</motion.div>
+				)}
 			</motion.div>
 			<motion.div
 				initial={false}

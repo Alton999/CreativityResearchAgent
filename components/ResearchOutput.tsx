@@ -8,12 +8,15 @@ import {
 import SearchTerms from "./promptSections/SearchTerms";
 import SearchResultsSummary from "./promptSections/SearchResultsSummary";
 import HypothesisGenerated from "./promptSections/HypothesisGenerated";
+import { Button } from "./ui/button";
+import axios from "axios";
 
 type Props = {
 	prompt: PromptType;
 };
 
 const ResearchOutput = ({ prompt }: Props) => {
+	console.log("prompt", prompt);
 	const [searchTerms, setSearchTerms] = useState<SearchTermType[]>(
 		prompt.searchTerms
 	);

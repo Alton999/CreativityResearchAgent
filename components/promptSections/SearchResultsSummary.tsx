@@ -47,9 +47,11 @@ Props) => {
 
 	const generateInitialHypothesis = async () => {
 		console.log("Generating initial hypothesis");
+		setHypothesisGenerationLoading(true);
 		const response = await axios.post("/api/generate/hypothesisGenerator", {
 			promptId
 		});
+		setHypothesisGenerationLoading(false);
 		console.log("Response from hypothesis generation", response);
 		setHypothesisGeneration(response.data.hypothesisGenerationArray);
 		console.log("From response in search results summary", response);

@@ -6,18 +6,27 @@ import { HypothesisGeneration as HypothesisGenerationTypes } from "@/types";
 import { Circle, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "../ui/scroll-area";
+import { useToast } from "@/components/ui/use-toast";
 
 type Props = {
-	setShowHypothesisModal: React.Dispatch<React.SetStateAction<boolean>>;
-	setAssociationGenerationStatus: React.Dispatch<React.SetStateAction<string>>;
+	setSelectedHypothesisGenerationModal: React.Dispatch<
+		React.SetStateAction<string>
+	>;
+	setNewHypothesisStatus: React.Dispatch<React.SetStateAction<string>>;
+	setHypothesisGeneration: React.Dispatch<
+		React.SetStateAction<HypothesisGenerationTypes[]>
+	>;
 	promptId: string;
 };
 
 const ForcedAssociationModal = ({
-	setShowHypothesisModal,
-	setAssociationGenerationStatus,
+	setSelectedHypothesisGenerationModal,
+	setNewHypothesisStatus,
+	setHypothesisGeneration,
 	promptId
 }: Props) => {
+	const { toast } = useToast();
+
 	const [hypothesisLoading, setHypothesisLoading] = useState<boolean>(false);
 	const [allHypothesis, setAllHypothesis] = useState<
 		HypothesisGenerationTypes[]
@@ -39,8 +48,8 @@ const ForcedAssociationModal = ({
 		});
 	};
 	const generateAssociation = async () => {
-		setShowHypothesisModal(false);
-		setAssociationGenerationStatus("loading");
+		setSelectedHypothesisGenerationModal("");
+		setNewHypothesisStatus("loading");
 		const response = await axios.post(
 			"/api/hypothesisActions/generateAssociations",
 			{
@@ -48,14 +57,15 @@ const ForcedAssociationModal = ({
 				reframeResearchQuestionSelected
 			}
 		);
-		// const response = await axios.post(
-		// 	"/api/hypothesisActions/generateExperiment",
-		// 	{
-		// 		hypothesisId,
-		// 		instructions
-		// 	}
-		// );
-		setAssociationGenerationStatus("loading");
+		toast({
+			title: "Hypothesis generated successfully with associations",
+			variant: "success",
+			description: "Check out the new hypothesis at the bottom of the page."
+		});
+		console.log("Response from hypothesis association", response);
+		setHypothesisGeneration(response.data.allHypothesis);
+		setNewHypothesisStatus("done");
+
 		// setHypothesisInstance(response.data.updatedHypothesisGeneration);
 	};
 
@@ -81,7 +91,7 @@ const ForcedAssociationModal = ({
 	return (
 		<ModalLayout
 			title="Forced association"
-			closeModal={() => setShowHypothesisModal(false)}
+			closeModal={() => setSelectedHypothesisGenerationModal("")}
 		>
 			<p>
 				In this action you as the lead scientist is able to find connections,

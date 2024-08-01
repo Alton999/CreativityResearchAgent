@@ -43,10 +43,23 @@ model SearchTerms {
   searchTerm    String
   explanation   String          @default("")
   newSearchTerm Boolean         @default(false)
+  savedPapers   SavedPaper[]
   SearchResults SearchResults[]
   prompt        Prompt          @relation(fields: [promptId], references: [id])
 
   @@index([promptId])
+}
+
+model SavedPaper {
+  id            String      @id @default(cuid())
+  paperId       String
+  title         String
+  authors       String[]
+  abstract      String      @default("")
+  year          Int         @default(0)
+  url           String      @default("")
+  SearchTerms   SearchTerms @relation(fields: [searchTermsId], references: [id])
+  searchTermsId String
 }
 
 model SearchResults {
@@ -65,9 +78,11 @@ model HypothesisGeneration {
   promptId            String
   hypothesis          String
   proposedExperiments String              @default("")
+  justification       String              @default("")
   forcedAssociations  ForcedAssociation[]
   createdAt           DateTime            @default(now())
-  prompt              Prompt              @relation(fields: [promptId], references: [id])
+
+  prompt Prompt @relation(fields: [promptId], references: [id])
 
   // @@unique([hypothesis])
   @@index([promptId])
