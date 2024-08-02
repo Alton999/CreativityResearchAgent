@@ -64,6 +64,7 @@ const SearchTerm = ({
 		setFeedback("");
 		addNewSearchTerm(newSearchTerm);
 	};
+	// TODO Make this run in the background to allow seamless research experience
 	const fetchResearchPaper = async () => {
 		const response = await axios.post("/api/getResearchFromSearchTerms", {
 			searchTerm
