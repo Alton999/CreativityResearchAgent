@@ -59,7 +59,7 @@ export const wordware = async ({
 			.join("");
 
 		// Should return an array of SearchTerm objects
-		const cleanedString = cleanupStringToJSON(summary);
+		const cleanedString = cleanupStringToJSON(summary, "");
 		const searchTermJson = JSON.parse(cleanedString);
 		console.log("Summary JSON:", searchTermJson);
 		return searchTermJson;
