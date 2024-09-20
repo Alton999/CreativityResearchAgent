@@ -2,75 +2,73 @@ export const maxDuration = 300;
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { wordwareGenerator } from "@/lib/wordwareGenerator";
-
-type SearchTerm = {
-	searchTerm: string;
-	explanation: string;
-	promptId: string;
-	id: string;
-	question: string;
-	field: string;
-};
-type SearchResult = {
-	id: string;
-	searchTermId: string;
-	searchResult: string;
-};
+import { SearchTerm as SearchTermType } from "@/types";
 
 export async function POST(req: Request, res: Response) {
 	try {
 		const searchTerms = await req.json();
-		const searchTermsInstance: SearchTerm[] =
+		const searchTermsInstance: SearchTermType[] =
 			await searchTerms.searchTermInstance;
 		// Search terms is an array of search terms
 		console.log("Search terms:", searchTermsInstance);
 		const searchResultsArray = Promise.all(
-			searchTermsInstance.map(async (searchTerm: SearchTerm, index: Number) => {
-				// Lets see if there is already an instance of search results in the database
-				const existingSearchResults = await prisma.searchResults.findFirst({
-					where: {
-						searchTermId: searchTerm.id
-					}
-				});
-				const existingPrompt = await prisma.prompt.findUnique({
-					where: {
-						id: searchTerm.promptId
-					}
-				});
-				console.log("Existing prompt:", existingPrompt);
-				if (existingSearchResults) {
-					console.log("Search result exists:", existingSearchResults);
-					if (existingPrompt?.searchResultsSummary !== "") {
-						console.log("Search results summary exists:");
-						NextResponse.json({
-							searchResultsSummary: existingPrompt?.searchResultsSummary
-						});
-					}
-					return existingSearchResults;
-				} else {
-					console.log("Creating new search results instance");
-					// construct inputs
-					const inputs = {
-						search_terms: searchTerm.searchTerm
-					};
-					const searchResult = await wordwareGenerator({
-						inputs: inputs,
-						wordwarePromptId: "df77f083-8a4c-4bd7-aeea-c52348fe0383"
-					});
-
-					const newSearchResultInstance = await prisma.searchResults.create({
-						data: {
-							searchTermId: searchTerm.id,
-							searchResult: searchResult
+			searchTermsInstance.map(
+				async (searchTerm: SearchTermType, index: Number) => {
+					// Lets see if there is already an instance of search results in the database
+					const existingSearchResults = await prisma.searchResults.findFirst({
+						where: {
+							searchTermId: searchTerm.id
 						}
 					});
-					return newSearchResultInstance;
+					const existingPrompt = await prisma.prompt.findUnique({
+						where: {
+							id: searchTerm.promptId
+						}
+					});
+					console.log("Existing prompt:", existingPrompt);
+					if (existingSearchResults) {
+						console.log("Search result exists:", existingSearchResults);
+						if (existingPrompt?.searchResultsSummary !== "") {
+							console.log("Search results summary exists:");
+							NextResponse.json({
+								searchResultsSummary: existingPrompt?.searchResultsSummary
+							});
+						}
+						return existingSearchResults;
+					} else {
+						console.log("Creating new search results instance");
+						// Construct an saved papers array from the search term
+						// construct inputs
+						// Get saved papers from search term
+						const savedPapers = await prisma.savedPaper.findMany({
+							where: {
+								searchTermsId: searchTerm.id
+							}
+						});
+						console.log("Saved papers from route:", savedPapers);
+						const inputs = {
+							search_terms: searchTerm.searchTerm,
+							saved_papers: JSON.stringify(savedPapers)
+						};
+						const searchResult = await wordwareGenerator({
+							inputs: inputs,
+							wordwarePromptId: "df77f083-8a4c-4bd7-aeea-c52348fe0383"
+						});
+
+						const newSearchResultInstance = await prisma.searchResults.create({
+							data: {
+								searchTermId: searchTerm.id,
+								searchResult: searchResult
+							}
+						});
+						return newSearchResultInstance;
+					}
 				}
-			})
+			)
 		);
 		// Join all search results into a single string
 		const searchResultsString = (await searchResultsArray)
-			.map((searchResult: SearchResult) => searchResult.searchResult)
+			.map((searchResult: any) => searchResult.searchResult)
 			.join(" ");
 
 		const searchResultSummaryInputs = {

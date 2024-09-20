@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { wordwareGenerator } from "@/lib/wordwareGenerator";
 import { cleanupStringToJSON } from "@/lib/cleanStringToJSON";
+import { all } from "axios";
 
 export async function POST(req: Request, res: Response) {
 	try {
@@ -28,22 +29,37 @@ export async function POST(req: Request, res: Response) {
 		const prompt = await prisma.prompt.findUnique({
 			where: {
 				id: promptId
+			},
+			include: {
+				searchTerms: {
+					include: {
+						savedPapers: true
+					}
+				}
 			}
 		});
 		if (!prompt) return NextResponse.json({ error: "Prompt not found" });
 
-		// console.log("Hypothesis Generation Array:", hypotheses);
+		// initialise whether instructions is empty, if empty we are going to use the technique of choosing a random paper from the savedPapers
+		let selectedPaper = null;
 		if (instructions === "") {
 			instructions = "No specific instructions";
+			// Fetch all saved papers
+			const allSavedPapers = prompt.searchTerms.flatMap(
+				(term) => term.savedPapers
+			);
+			const randomIndex = Math.floor(Math.random() * allSavedPapers.length);
+			selectedPaper = allSavedPapers[randomIndex];
+			console.log("Selected paper:", selectedPaper);
 		}
 		// Create inputs for wordware
 		const inputs = {
 			all_hypothesis: hypotheses,
 			search_results: prompt.searchResultsSummary,
 			research_question: prompt.researchQuestion,
-			instructions: instructions
+			instructions: instructions,
+			selected_paper: selectedPaper
 		};
-		console.log;
 		const newHypothesis = await wordwareGenerator({
 			inputs: inputs,
 			wordwarePromptId: "7c078190-b478-4eb5-999d-36e70fd00b3c"

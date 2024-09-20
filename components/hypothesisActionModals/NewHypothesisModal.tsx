@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ModalLayout from "./ModalLayout";
+import ModalLayout from "../ModalLayout";
 import { Button } from "../ui/button";
 import axios from "axios";
 import { HypothesisGeneration as HypothesisGenerationTypes } from "@/types";
@@ -50,8 +50,12 @@ const NewHypothesisModal = ({
 			title="Generate new hypothesis"
 			closeModal={() => setSelectedHypothesisGenerationModal("")}
 		>
+			<p>
+				Note: If you do not include any instructions the system will
+				automatically decide a topic that is worth exploring.
+			</p>
 			<label htmlFor="name instruction">
-				Custom for new hypothesis instructions
+				Custom instructions for new hypothesis
 			</label>
 			<Textarea
 				required

@@ -55,8 +55,9 @@ model SavedPaper {
   paperId       String
   title         String
   authors       String[]
-  abstract      String      @default("")
-  year          Int         @default(0)
+  summary       String      @default("")
+  text          String      @default("")
+  publishedYear Int         @default(0)
   url           String      @default("")
   SearchTerms   SearchTerms @relation(fields: [searchTermsId], references: [id])
   searchTermsId String

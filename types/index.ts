@@ -15,17 +15,16 @@ export type SavedPaper = {
 	paperId: string;
 	title: string;
 	authors: string[];
-	abstract: string;
-	year: number;
+	summary: string;
+	text: string;
+	publishedYear: number;
 	url: string;
-	searchTermId: string;
+	searchTermsId: string;
 };
-
 export type SearchResult = {
 	id: string;
 	searchResult: string;
 	createdAt: string;
-	promptId: string;
 	searchTermId: string;
 };
 

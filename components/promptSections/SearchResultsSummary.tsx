@@ -100,8 +100,14 @@ Props) => {
 							ul: ({ children }) => (
 								<ul className="list-disc ml-6 space-y-2 mb-4">{children}</ul>
 							),
+							h1: ({ children }) => (
+								<h1 className="font-bold text-2xl mb-2">{children}</h1>
+							),
+							h2: ({ children }) => (
+								<h2 className="font-bold text-xl mb-2">{children}</h2>
+							),
 							h3: ({ children }) => (
-								<h3 className="font-bold text-lg mb-2">{children}</h3>
+								<h3 className="font-semibold text-lg mb-2">{children}</h3>
 							),
 							code({ children }) {
 								return (

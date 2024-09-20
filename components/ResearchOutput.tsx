@@ -16,7 +16,6 @@ type Props = {
 };
 
 const ResearchOutput = ({ prompt }: Props) => {
-	console.log("prompt", prompt);
 	const [searchTerms, setSearchTerms] = useState<SearchTermType[]>(
 		prompt.searchTerms
 	);
@@ -39,6 +38,7 @@ const ResearchOutput = ({ prompt }: Props) => {
 			setSetHypothesisButtonActive(false);
 		}
 	}, [hypothesisGeneration, searchResultsSummary]);
+
 	return (
 		<div className="space-y-8">
 			<SearchTerms

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ModalLayout from "./ModalLayout";
+import ModalLayout from "../ModalLayout";
 import { Button } from "../ui/button";
 import axios from "axios";
 import { HypothesisGeneration as HypothesisGenerationTypes } from "@/types";
