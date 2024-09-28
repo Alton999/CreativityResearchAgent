@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 import HypothesisCard from "../HypothesisCard";
 import ForcedAssociationModal from "../hypothesisActionModals/ForcedAssociationModal";
 import NewHypothesisModal from "../hypothesisActionModals/NewHypothesisModal";
+import BranchOffExistingHypothesisModal from "../hypothesisActionModals/BranchOffExistingHypothesisModal";
 
 type Props = {
 	hypothesisGeneration: HypothesisGenerationTypes[];
@@ -67,7 +68,11 @@ const HypothesisGenerated = ({
 							>
 								Forced hypothesis association
 							</DropdownMenuItem>
-							<DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() =>
+									setSelectedHypothesisGenerationModal("branch hypothesis")
+								}
+							>
 								Branch off existing hypothesis
 							</DropdownMenuItem>
 							<DropdownMenuItem disabled>
@@ -120,6 +125,16 @@ const HypothesisGenerated = ({
 			)}
 			{selectedHypothesisGenerationModal === "new hypothesis" && (
 				<NewHypothesisModal
+					setSelectedHypothesisGenerationModal={
+						setSelectedHypothesisGenerationModal
+					}
+					promptId={hypothesisGeneration[0].promptId}
+					setNewHypothesisStatus={setNewHypothesisStatus}
+					setHypothesisGeneration={setHypothesisGeneration}
+				/>
+			)}
+			{selectedHypothesisGenerationModal === "branch hypothesis" && (
+				<BranchOffExistingHypothesisModal
 					setSelectedHypothesisGenerationModal={
 						setSelectedHypothesisGenerationModal
 					}

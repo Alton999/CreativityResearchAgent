@@ -50,11 +50,13 @@ const GenerateSearchSummaryModal = ({
 		const response = await axios.post("/api/generate/searchEngine", {
 			searchTermInstance: selectedSearchTerms
 		});
+		setSearchResultsSummaryLoading(false);
 		toast({
 			title: "Successfully generated search summary",
 			variant: "success",
 			description: "Check out the search summary."
 		});
+		console.log("Response from generate search results: ", response);
 		setSearchResultsSummary(response.data.searchResultsSummary);
 
 		// setHypothesisInstance(response.data.updatedHypothesisGeneration);

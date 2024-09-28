@@ -4,6 +4,52 @@ import { prisma } from "@/lib/db";
 import { SavedPaper as SavedPaperTypes } from "@/types";
 import Exa from "exa-js";
 
+const cleanAuthors = (authors: string[]): string[] => {
+	// Regex pattern to match names (more lenient)
+	const namePattern = /^[A-Z][a-z]+(?:[-\s'][A-Za-z]+)*$/;
+
+	// Function to check if a string is likely an email
+	const isEmail = (str: string): boolean =>
+		/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
+
+	// Function to check if a string is likely a location
+	const isLocation = (str: string): boolean =>
+		/^(?:The\s)?[A-Z][a-z]+(?:[\s-][A-Z][a-z]+)*$/.test(str) &&
+		!namePattern.test(str);
+
+	// Join consecutive name parts
+	const joinedAuthors: string[] = [];
+	let currentName = "";
+
+	for (const part of authors) {
+		if (namePattern.test(part) || /^(?:and|[A-Z])$/.test(part)) {
+			currentName += (currentName ? " " : "") + part;
+		} else {
+			if (currentName) {
+				joinedAuthors.push(currentName.trim());
+				currentName = "";
+			}
+			joinedAuthors.push(part);
+		}
+	}
+	if (currentName) {
+		joinedAuthors.push(currentName.trim());
+	}
+
+	// Filter the array to keep only items that look like names
+	const cleanedAuthors = joinedAuthors.filter(
+		(item) =>
+			(namePattern.test(item) || /^[A-Z][a-z]+\s[A-Z][a-z]+/.test(item)) &&
+			!isEmail(item) &&
+			!isLocation(item)
+	);
+
+	// Remove duplicates and 'and'
+	return Array.from(new Set(cleanedAuthors)).filter(
+		(name) => name.toLowerCase() !== "and"
+	);
+};
+
 const extractPublishedYear = (isoDateString: string) => {
 	console.log("Extracting year from date string:", isoDateString);
 	const yearMatch = isoDateString.match(/^(\d{4})/);
@@ -80,15 +126,22 @@ export async function POST(req: Request, res: Response) {
 				}
 			});
 			console.log("Result from Exa:", result);
+			// Can I clean up the author field with REGEX checks?
 			const formattedPaperData: any[] = result.results.map((paper: any) => {
 				let authors;
 				let yearPublished;
 				if (paper.author === "Username" || !paper.author) {
-					authors = "No author available";
+					authors = ["No author available"];
 				} else {
 					authors = paper.author
 						.split(/[,;]/) // Split by comma or semicolon
 						.map((author: string) => author.trim());
+					console.log("Authors before cleaning:", authors);
+					authors = cleanAuthors(authors);
+					if (cleanAuthors.length === 0) {
+						authors = ["No author available"];
+					}
+					console.log("Authors after cleaning:", authors);
 				}
 				if (paper.publishedDate) {
 					yearPublished = extractPublishedYear(paper.publishedDate);
