@@ -100,9 +100,7 @@ const ForcedAssociationModal = ({
 				hypothesis to create something truly unique.
 			</p>
 			<div>
-				<h3 className="font-bold mb-2">
-					Select up to 3 hypothesis to associate
-				</h3>
+				<h3 className="font-bold mb-2">Select 3 hypothesis to associate</h3>
 				{hypothesisLoading ? (
 					<Loader2 className="animate-spin" size={24} />
 				) : (
@@ -143,7 +141,7 @@ const ForcedAssociationModal = ({
 					</ScrollArea>
 				)}
 			</div>
-			<div className="border border-slate-400 p-4 rounded-lg flex justify-between">
+			{/* <div className="border border-slate-400 p-4 rounded-lg flex justify-between">
 				<div>
 					<h3 className="font-bold mb-2">Reframe research question</h3>
 					<p className="text-slate-500 text-sm">
@@ -160,7 +158,7 @@ const ForcedAssociationModal = ({
 						);
 					}}
 				/>
-			</div>
+			</div> */}
 			{/* <label htmlFor="name instruction">Custom instructions: (Optional)</label> */}
 
 			<Button

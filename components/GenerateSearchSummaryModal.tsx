@@ -71,7 +71,7 @@ const GenerateSearchSummaryModal = ({
 
 	return (
 		<ModalLayout
-			title="Select 3 search terms "
+			title="Select 3 search terms"
 			closeModal={() => setShowSearchTermSelectionModal(false)}
 		>
 			<p>
@@ -79,9 +79,7 @@ const GenerateSearchSummaryModal = ({
 				summarise into a research document.
 			</p>
 			<div>
-				<h3 className="font-bold mb-2">
-					Select up to 3 hypothesis to associate
-				</h3>
+				<h3 className="font-bold mb-2">Select 3 search terms to continue</h3>
 
 				<ScrollArea className="max-h-[400px] flex flex-col gap-4 pr-3.5">
 					{allSearchTerms.map((searchTerm, index) => (
