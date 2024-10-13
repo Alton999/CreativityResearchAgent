@@ -7,7 +7,6 @@ import {
 	CardHeader,
 	CardTitle
 } from "@/components/ui/card";
-
 import ResearchOutput from "@/components/ResearchOutput";
 import ResearchPaperSidebar from "@/components/ResearchPaperSidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";

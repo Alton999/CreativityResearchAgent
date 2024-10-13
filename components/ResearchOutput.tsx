@@ -8,8 +8,8 @@ import {
 import SearchTerms from "./promptSections/SearchTerms";
 import SearchResultsSummary from "./promptSections/SearchResultsSummary";
 import HypothesisGenerated from "./promptSections/HypothesisGenerated";
-import { Button } from "./ui/button";
-import axios from "axios";
+
+import { create } from "zustand";
 
 type Props = {
 	prompt: PromptType;
