@@ -52,7 +52,7 @@ const PromptResults = async ({ params: { promptId } }: Props) => {
 							</CardDescription>
 						</CardHeader>
 					</Card>
-					<ResearchOutput prompt={prompt as unknown as PromptType} />
+					<ResearchOutput initialPrompt={prompt as unknown as PromptType} />
 				</ScrollArea>
 			</main>
 		</>

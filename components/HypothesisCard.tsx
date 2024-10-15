@@ -8,23 +8,20 @@ import { HypothesisGeneration as HypothesisGenerationTypes } from "@/types";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import useResearchStore from "@/store/useResearchStore";
 
 type HypothesisCardProps = {
-	setHypothesisGeneration: React.Dispatch<
-		React.SetStateAction<HypothesisGenerationTypes[]>
-	>;
-	hypothesis: HypothesisGenerationTypes;
+	hypothesisId: string;
 	index: number;
 };
 
-const HypothesisCard = ({
-	setHypothesisGeneration,
-	hypothesis,
-	index
-}: HypothesisCardProps) => {
+const HypothesisCard = ({ hypothesisId, index }: HypothesisCardProps) => {
 	// Initialise hypothesis state upon hydration
-	const [hypothesisInstance, setHypothesisInstance] =
-		useState<HypothesisGenerationTypes>(hypothesis);
+	const { prompt, updateHypothesis, removeHypothesis } = useResearchStore();
+
+	const hypothesisInstance = prompt?.hypothesisGeneration.find(
+		(hypothesis) => hypothesis.id === hypothesisId
+	);
 
 	const [actionToggleOpen, setActionToggleOpen] = useState<string>("");
 	const [selectedAction, setSelectedAction] = useState<string>("");
@@ -36,7 +33,7 @@ const HypothesisCard = ({
 			hypothesisId,
 			promptId
 		});
-		setHypothesisGeneration(response.data.hypothesisGenerationArray);
+		removeHypothesis(hypothesisId);
 	};
 
 	const actionToggle = (hypothesisId: string, actionType: string) => {
@@ -54,10 +51,10 @@ const HypothesisCard = ({
 		useState<string>("");
 
 	useEffect(() => {
-		if (hypothesis.proposedExperiments !== "") {
+		if (hypothesisInstance?.proposedExperiments !== "") {
 			setExperimentGenerationStatus("generated");
 		}
-	}, [hypothesis]);
+	}, [hypothesisInstance]);
 	const renderActionComponent = (
 		selectedAction: string,
 		hypothesisId: string
@@ -68,7 +65,6 @@ const HypothesisCard = ({
 					<GenerateExperimentModal
 						setActionToggleOpen={setActionToggleOpen}
 						setExperimentGenerationStatus={setExperimentGenerationStatus}
-						setHypothesisInstance={setHypothesisInstance}
 						hypothesisId={hypothesisId}
 					/>
 				);
@@ -76,7 +72,7 @@ const HypothesisCard = ({
 				return <div>No action selected</div>;
 		}
 	};
-
+	if (!hypothesisInstance) return <div>Hypothesis not found.</div>;
 	return (
 		<div className="p-4 border border-gray-200 rounded-md shadow-sm">
 			<div className="w-full flex justify-between items-center">

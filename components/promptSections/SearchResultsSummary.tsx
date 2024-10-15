@@ -8,26 +8,20 @@ import { HypothesisGeneration as HypothesisGenerationTypes } from "@/types";
 import { Button } from "../ui/button";
 import { Pencil, ArrowDownToLine, Loader2 } from "lucide-react";
 import axios from "axios";
+import useResearchStore from "@/store/useResearchStore";
 
 type Props = {
-	searchResultsSummary: string;
-	setHypothesisGeneration: React.Dispatch<
-		React.SetStateAction<HypothesisGenerationTypes[]>
-	>;
-	setSearchResultsSummary: React.Dispatch<React.SetStateAction<string>>;
-	promptId: string;
 	hypothesisButtonActive: boolean;
 	// searchResultsSummaryLoading: boolean;
 };
 
 const SearchResultsSummary = ({
-	searchResultsSummary,
-	setHypothesisGeneration,
-	setSearchResultsSummary,
-	promptId,
 	hypothesisButtonActive
 }: // searchResultsSummaryLoading
 Props) => {
+	const { prompt, updatePrompt, addHypothesis, searchResults } =
+		useResearchStore();
+
 	const [editable, setEditable] = useState<boolean>(false);
 	const [searchSummaryEditLoading, setSearchSummaryEditLoading] =
 		useState<boolean>(false);
@@ -36,9 +30,10 @@ Props) => {
 		useState<boolean>(false);
 	const handleSave = async () => {
 		setSearchSummaryEditLoading(true);
+		if (!prompt) return;
 		const response = await axios.post("/api/userEdits/searchSummaryEdit", {
-			promptId: promptId,
-			editedText: searchResultsSummary
+			promptId: prompt.id,
+			editedText: prompt.searchResultsSummary
 		});
 		setSearchSummaryEditLoading(false);
 		setEditable(false);
@@ -46,16 +41,31 @@ Props) => {
 	};
 
 	const generateInitialHypothesis = async () => {
-		console.log("Generating initial hypothesis");
 		setHypothesisGenerationLoading(true);
-		const response = await axios.post("/api/generate/hypothesisGenerator", {
-			promptId
-		});
-		setHypothesisGenerationLoading(false);
-		console.log("Response from hypothesis generation", response);
-		setHypothesisGeneration(response.data.hypothesisGenerationArray);
-		console.log("From response in search results summary", response);
+		try {
+			const response = await axios.post("/api/generate/hypothesisGenerator", {
+				promptId: prompt?.id
+			});
+			console.log("Response from hypothesis generation", response);
+			const hypothesisGenerationArray: HypothesisGenerationTypes[] =
+				response.data.hypothesisGenerationArray;
+			hypothesisGenerationArray.forEach((hypothesis) => {
+				addHypothesis(hypothesis);
+			});
+		} catch (error) {
+			console.error("Error generating hypothesis:", error);
+		} finally {
+			setHypothesisGenerationLoading(false);
+		}
 	};
+	const handleSearchSummaryChange = (value: string) => {
+		if (prompt) {
+			updatePrompt({ ...prompt, searchResultsSummary: value });
+		}
+	};
+	if (!prompt) {
+		return <div>Prompt not found.</div>;
+	}
 	return (
 		<Card>
 			<CardHeader className="flex flex-row justify-between items-center">
@@ -86,8 +96,8 @@ Props) => {
 			<CardContent>
 				{editable ? (
 					<textarea
-						value={searchResultsSummary}
-						onChange={(e) => setSearchResultsSummary(e.target.value)}
+						value={prompt.searchResultsSummary}
+						onChange={(e) => handleSearchSummaryChange(e.target.value)}
 						className="w-full h-[800px] p-4 border border-gray-300 rounded-lg"
 					/>
 				) : (
@@ -135,7 +145,7 @@ Props) => {
 							}
 						}}
 					>
-						{searchResultsSummary}
+						{prompt.searchResultsSummary}
 					</ReactMarkdown>
 				)}
 				<Button

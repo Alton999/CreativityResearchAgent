@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import useResearchStore from "@/store/useResearchStore";
+
 import SearchTerm from "../SearchTerm";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
@@ -6,20 +8,10 @@ import { SearchTerm as SearchTermType } from "@/types";
 import { Loader2 } from "lucide-react";
 import GenerateSearchSummaryModal from "../GenerateSearchSummaryModal";
 
-type Props = {
-	searchTerms: SearchTermType[];
-	setSearchTerms: React.Dispatch<React.SetStateAction<SearchTermType[]>>;
-	setSearchResultsSummary: React.Dispatch<React.SetStateAction<string>>;
-	searchResultsSummary: string;
-};
+const SearchTerms = () => {
+	const { searchTerms, addSearchTerm, searchResultsSummary } =
+		useResearchStore();
 
-const SearchTerms = ({
-	searchTerms,
-	setSearchTerms,
-	setSearchResultsSummary,
-	searchResultsSummary
-}: Props) => {
-	console.log("Search terms: ", searchTerms);
 	const [searchResultsSummaryLoading, setSearchResultsSummaryLoading] =
 		useState<boolean>(false);
 
@@ -27,7 +19,7 @@ const SearchTerms = ({
 		useState<boolean>(false);
 
 	const addNewSearchTerm = (newSearchTerm: SearchTermType) => {
-		setSearchTerms((prevSearchTerms) => [...prevSearchTerms, newSearchTerm]);
+		addSearchTerm(newSearchTerm);
 	};
 
 	const [
@@ -40,28 +32,6 @@ const SearchTerms = ({
 			setShowSearchTermSelectionModalButtonActive(true);
 		}
 	}, [searchResultsSummary]);
-	// const generateSearchResults = async () => {
-	// 	setSearchResultsSummaryLoading(true);
-	// 	const response = await axios.post("/api/generate/searchEngine", {
-	// 		searchTermInstance: selectedSearchTerms
-	// 	});
-	// 	console.log("Response from generate search results: ", response);
-	// 	setGenerateSearchSummaryButtonActive(false);
-	// 	setSearchResultsSummary(response.data.searchResultsSummary);
-	// };
-	// useEffect(() => {
-	// 	if (searchResultsSummary.length > 0) {
-	// 		setShowSearchTermSelectionModalButtonActive(true);
-	// 	}
-	// }, [searchResultsSummary]);
-
-	// useEffect(() => {
-	// 	if (selectedSearchTerms.length === 3) {
-	// 		setGenerateSearchSummaryButtonActive(true);
-	// 	} else {
-	// 		setGenerateSearchSummaryButtonActive(false);
-	// 	}
-	// }, [selectedSearchTerms]);
 
 	return (
 		<>
@@ -111,7 +81,6 @@ const SearchTerms = ({
 					setSearchResultsSummaryLoading={setSearchResultsSummaryLoading}
 					searchResultsSummaryLoading={searchResultsSummaryLoading}
 					setShowSearchTermSelectionModal={setShowSearchTermSelectionModal}
-					setSearchResultsSummary={setSearchResultsSummary}
 				/>
 			)}
 		</>

@@ -1,69 +1,51 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-	PromptType,
-	SearchTerm as SearchTermType,
-	HypothesisGeneration as HypothesisGenerationTypes
-} from "@/types";
+import { PromptType } from "@/types";
 import SearchTerms from "./promptSections/SearchTerms";
 import SearchResultsSummary from "./promptSections/SearchResultsSummary";
 import HypothesisGenerated from "./promptSections/HypothesisGenerated";
-
-import { create } from "zustand";
+import useResearchStore from "@/store/useResearchStore";
 
 type Props = {
-	prompt: PromptType;
+	initialPrompt: PromptType;
 };
 
-const ResearchOutput = ({ prompt }: Props) => {
-	const [searchTerms, setSearchTerms] = useState<SearchTermType[]>(
-		prompt.searchTerms
-	);
-	const [searchResultsSummary, setSearchResultsSummary] = useState<string>(
-		prompt.searchResultsSummary
-	);
-	const [hypothesisGeneration, setHypothesisGeneration] = useState<
-		HypothesisGenerationTypes[]
-	>(prompt.hypothesisGeneration);
+const ResearchOutput = ({ initialPrompt }: Props) => {
+	const { setPrompt, prompt } = useResearchStore();
 
-	const [hypothesisButtonActive, setSetHypothesisButtonActive] =
+	const [hypothesisButtonActive, setHypothesisButtonActive] =
 		useState<boolean>(false);
 
 	useEffect(() => {
-		console.log("Hypothesis generation", hypothesisGeneration);
-		if (searchResultsSummary.length > 0) {
-			setSetHypothesisButtonActive(true);
-		}
-		if (hypothesisGeneration.length > 0) {
-			setSetHypothesisButtonActive(false);
-		}
-	}, [hypothesisGeneration, searchResultsSummary]);
+		setPrompt(initialPrompt);
+	}, [initialPrompt, setPrompt]);
 
+	useEffect(() => {
+		if (prompt) {
+			if (prompt.searchResultsSummary.length > 0) {
+				setHypothesisButtonActive(true);
+			}
+
+			if (prompt.hypothesisGeneration) {
+				if (prompt.hypothesisGeneration.length > 0) {
+					setHypothesisButtonActive(false);
+				}
+			}
+		}
+	}, [prompt]);
+
+	if (!prompt) {
+		return <div>Prompt not found.</div>;
+	}
 	return (
 		<div className="space-y-8">
-			<SearchTerms
-				searchTerms={searchTerms as SearchTermType[]}
-				setSearchTerms={setSearchTerms}
-				setSearchResultsSummary={setSearchResultsSummary}
-				searchResultsSummary={searchResultsSummary}
-			/>
-			{searchResultsSummary && (
-				<SearchResultsSummary
-					searchResultsSummary={searchResultsSummary}
-					setHypothesisGeneration={setHypothesisGeneration}
-					setSearchResultsSummary={setSearchResultsSummary}
-					promptId={prompt.id}
-					hypothesisButtonActive={hypothesisButtonActive}
-				/>
+			<SearchTerms />
+			{prompt.searchResultsSummary && (
+				<SearchResultsSummary hypothesisButtonActive={hypothesisButtonActive} />
 			)}
 			{
 				// Display hypothesis generation
-				hypothesisGeneration.length > 0 && (
-					<HypothesisGenerated
-						hypothesisGeneration={hypothesisGeneration}
-						setHypothesisGeneration={setHypothesisGeneration}
-					/>
-				)
+				prompt.hypothesisGeneration.length > 0 && <HypothesisGenerated />
 			}
 		</div>
 	);
