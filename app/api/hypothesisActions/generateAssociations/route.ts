@@ -59,22 +59,22 @@ export async function POST(req: Request, res: Response) {
 		const hypothesisJson = JSON.parse(cleanupStringToJSON(newHypothesis, ""));
 		console.log("Associations wordware response", hypothesisJson);
 		// Create the new hypothesis
-		await prisma.hypothesisGeneration.create({
+		const newHypothesisInstance = await prisma.hypothesisGeneration.create({
 			data: {
 				promptId: prompt.id,
 				hypothesis: hypothesisJson.hypothesis,
 				justification: hypothesisJson.reasoning
 			}
 		});
-		// Fetch all hypothesis
-		const allHypothesis = await prisma.hypothesisGeneration.findMany({
-			where: {
-				promptId: prompt.id
-			}
-		});
+		// // Fetch all hypothesis
+		// const allHypothesis = await prisma.hypothesisGeneration.findMany({
+		// 	where: {
+		// 		promptId: prompt.id
+		// 	}
+		// });
 		// console.log("New Hypothesis:", allHypothesis);
 		return NextResponse.json({
-			allHypothesis
+			newHypothesisInstance
 		});
 	} catch (error) {
 		console.error("Error generating associations:", error);

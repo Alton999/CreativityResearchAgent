@@ -55,20 +55,20 @@ export async function POST(req: Request, res: Response) {
 			wordwarePromptId: "66acef55-3df0-4fc0-9e6e-40f5bb30e087"
 		});
 
-		await prisma.hypothesisGeneration.create({
+		const newHypothesisInstance = await prisma.hypothesisGeneration.create({
 			data: {
 				promptId: hypothesisInstance.promptId,
 				hypothesis: newHypothesis
 			}
 		});
 
-		const allHypothesis = await prisma.hypothesisGeneration.findMany({
-			where: {
-				promptId: hypothesisInstance.promptId
-			}
-		});
+		// const allHypothesis = await prisma.hypothesisGeneration.findMany({
+		// 	where: {
+		// 		promptId: hypothesisInstance.promptId
+		// 	}
+		// });
 		return NextResponse.json({
-			allHypothesis
+			newHypothesisInstance
 		});
 	} catch (error) {
 		console.error("Error branching off hypothesis:"), error;

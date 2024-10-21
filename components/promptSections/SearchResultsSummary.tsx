@@ -19,8 +19,7 @@ const SearchResultsSummary = ({
 	hypothesisButtonActive
 }: // searchResultsSummaryLoading
 Props) => {
-	const { prompt, updatePrompt, addHypothesis, searchResults } =
-		useResearchStore();
+	const { prompt, updatePrompt, addHypothesis } = useResearchStore();
 
 	const [editable, setEditable] = useState<boolean>(false);
 	const [searchSummaryEditLoading, setSearchSummaryEditLoading] =
@@ -28,6 +27,7 @@ Props) => {
 
 	const [hypothesisGenerationLoading, setHypothesisGenerationLoading] =
 		useState<boolean>(false);
+
 	const handleSave = async () => {
 		setSearchSummaryEditLoading(true);
 		if (!prompt) return;

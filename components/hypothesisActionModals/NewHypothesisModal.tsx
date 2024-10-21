@@ -40,7 +40,7 @@ const NewHypothesisModal = ({
 			description: "Check out the new hypothesis at the bottom of the page."
 		});
 		console.log("Response from new hypothesis", response);
-		onAddHypothesis(response.data.allHypothesis);
+		onAddHypothesis(response.data.newHypothesisInstance);
 		setNewHypothesisStatus("done");
 	};
 	return (

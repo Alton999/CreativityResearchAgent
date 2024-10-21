@@ -61,7 +61,7 @@ const ForcedAssociationModal = ({
 			description: "Check out the new hypothesis at the bottom of the page."
 		});
 		console.log("Response from hypothesis association", response);
-		onAddHypothesis(response.data.allHypothesis);
+		onAddHypothesis(response.data.newHypothesisInstance);
 		setNewHypothesisStatus("done");
 
 		// setHypothesisInstance(response.data.updatedHypothesisGeneration);

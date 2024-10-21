@@ -8,24 +8,21 @@ import { feedbackSchema } from "@/schemas/feedback";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SearchTerm as SearchTermType } from "@/types";
-import { SavedPaper as SavedPaperTypes } from "@/types";
+import {
+	SearchTerm as SearchTermType,
+	SavedPaper as SavedPaperTypes
+} from "@/types";
+
+import useResearchStore from "@/store/useResearchStore";
+
 type Input = z.infer<typeof feedbackSchema>;
 
 type SearchTermProps = {
 	searchTerm: SearchTermType;
-	addNewSearchTerm: (newSearchTerm: SearchTermType) => void;
-	// selectedSearchTerms: SearchTermType[];
-	// handleSearchTermSelection: (searchTerm: SearchTermType) => void;
 	index: number;
 };
-const SearchTerm = ({
-	searchTerm,
-	addNewSearchTerm,
-	// selectedSearchTerms,
-	// handleSearchTermSelection,
-	index
-}: SearchTermProps) => {
+const SearchTerm = ({ searchTerm, index }: SearchTermProps) => {
+	const { addSearchTerm } = useResearchStore();
 	const [loadingPaperStatus, setLoadingPaperStatus] = useState<string>("");
 	const [isOpen, setIsOpen] = useState(false);
 	const [feedbackLoading, setFeedbackLoading] = useState(false);
@@ -38,12 +35,12 @@ const SearchTerm = ({
 	const toggleAbstract = (paperId: string) => {
 		setExpandedAbstractId((prevId) => (prevId === paperId ? null : paperId));
 	};
-
+	const [error, setError] = useState<string | null>(null);
 	const [feedback, setFeedback] = useState<string>("");
 
 	const generateNewSearchTerm = async () => {
-		if (feedback.length < 40) {
-			alert("Please provide more feedback");
+		if (feedback === "") {
+			setError("Feedback cannot be empty");
 			return;
 		}
 		setFeedbackLoading(true);
@@ -51,21 +48,28 @@ const SearchTerm = ({
 			feedback,
 			searchTerm
 		});
-		const newSearchTerm = response.data.searchTermInstance;
+		if (!response.data.searchTermInstance) {
+			setError(
+				"Error generating new search term, please refresh and try again."
+			);
+			setFeedbackLoading(false);
+			return;
+		}
 		setFeedbackLoading(false);
 		setFeedback("");
-		addNewSearchTerm(newSearchTerm);
+		setError(null);
+		setIsOpen(false);
+		addSearchTerm(response.data.searchTermInstance);
 	};
+
 	useEffect(() => {
 		const getAndSetPapers = async (index: number) => {
 			setLoadingPaperStatus("loading");
-			console.log("Loading");
 			const response = await axios.post("/api/getResearchFromSearchTerms", {
 				searchTerm,
 				index
 			});
 			setSavedPapers(response.data.allPapers);
-			console.log("Response from fetchResearchPaper: ", response);
 			setLoadingPaperStatus("done");
 		};
 		getAndSetPapers(index);
@@ -107,10 +111,10 @@ const SearchTerm = ({
 						{
 							// Check if there are saved papers
 							savedPapers.length > 0 && (
-								<div className="w-full flex flex-col gap-4">
-									{savedPapers.map((paper) => (
-										<div
-											key={paper.id}
+								<ul className="w-full flex flex-col gap-4">
+									{savedPapers.map((paper, index) => (
+										<li
+											key={index}
 											className="w-full p-4 border border-gray-400 rounded-lg space-y-2"
 										>
 											<h4 className="text-lg font-bold">{paper.title}</h4>
@@ -193,9 +197,9 @@ const SearchTerm = ({
 													))}
 												</ul>
 											</div>
-										</div>
+										</li>
 									))}
-								</div>
+								</ul>
 							)
 						}
 					</motion.div>
@@ -223,6 +227,19 @@ const SearchTerm = ({
 							)}
 						</Button>
 					</div>
+					<AnimatePresence>
+						{error && (
+							<motion.div
+								className="px-4 py-2"
+								initial={{ opacity: 0, x: -50 }}
+								animate={{ opacity: 1, x: 0 }}
+								exit={{ opacity: 0, x: 50 }}
+								transition={{ duration: 0.5, ease: "easeOut" }}
+							>
+								<p className="text-red-500 font-bold text-lg">{error}</p>
+							</motion.div>
+						)}
+					</AnimatePresence>
 				</motion.div>
 			</motion.div>
 		</div>

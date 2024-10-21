@@ -83,9 +83,9 @@ const HypothesisGenerated = () => {
 					<div className="space-y-4">
 						{prompt.hypothesisGeneration.map((hypothesis, index) => (
 							<HypothesisCard
+								hypothesisInstance={hypothesis}
 								key={index}
 								index={index}
-								hypothesisId={hypothesis.id}
 							/>
 						))}
 						{

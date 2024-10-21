@@ -9,8 +9,7 @@ import { Loader2 } from "lucide-react";
 import GenerateSearchSummaryModal from "../GenerateSearchSummaryModal";
 
 const SearchTerms = () => {
-	const { searchTerms, addSearchTerm, searchResultsSummary } =
-		useResearchStore();
+	const { prompt } = useResearchStore();
 
 	const [searchResultsSummaryLoading, setSearchResultsSummaryLoading] =
 		useState<boolean>(false);
@@ -18,21 +17,19 @@ const SearchTerms = () => {
 	const [showSearchTermSelectionModal, setShowSearchTermSelectionModal] =
 		useState<boolean>(false);
 
-	const addNewSearchTerm = (newSearchTerm: SearchTermType) => {
-		addSearchTerm(newSearchTerm);
-	};
-
 	const [
 		showSearchTermSelectionModalButtonActive,
 		setShowSearchTermSelectionModalButtonActive
 	] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (searchResultsSummary.length > 0) {
+		if (!prompt) return;
+		if (prompt.searchResultsSummary.length > 0) {
 			setShowSearchTermSelectionModalButtonActive(true);
 		}
-	}, [searchResultsSummary]);
+	}, [prompt]);
 
+	if (!prompt) return <div>Prompt not found.</div>;
 	return (
 		<>
 			<Card>
@@ -44,12 +41,11 @@ const SearchTerms = () => {
 						Selected search terms for summary: {selectedSearchTerms.length}/3
 					</p> */}
 					<div className="space-y-4">
-						{searchTerms.map((searchTerm, index: number) => (
+						{prompt.searchTerms.map((searchTerm, index: number) => (
 							<SearchTerm
 								key={`${searchTerm.id}`}
 								index={index}
 								searchTerm={searchTerm}
-								addNewSearchTerm={addNewSearchTerm}
 								// selectedSearchTerms={selectedSearchTerms}
 								// handleSearchTermSelection={handleSearchTermSelection}
 							/>
@@ -77,7 +73,7 @@ const SearchTerms = () => {
 			{/* Render modal for generating search summary */}
 			{showSearchTermSelectionModal && (
 				<GenerateSearchSummaryModal
-					allSearchTerms={searchTerms}
+					allSearchTerms={prompt.searchTerms}
 					setSearchResultsSummaryLoading={setSearchResultsSummaryLoading}
 					searchResultsSummaryLoading={searchResultsSummaryLoading}
 					setShowSearchTermSelectionModal={setShowSearchTermSelectionModal}

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import axios from "axios";
 import GenerateExperimentModal from "./hypothesisActionModals/GenerateExperimentModal";
 import { Trash2, ChevronDown, Loader2 } from "lucide-react";
@@ -11,29 +10,35 @@ import { coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import useResearchStore from "@/store/useResearchStore";
 
 type HypothesisCardProps = {
-	hypothesisId: string;
 	index: number;
+	hypothesisInstance: HypothesisGenerationTypes;
 };
 
-const HypothesisCard = ({ hypothesisId, index }: HypothesisCardProps) => {
-	// Initialise hypothesis state upon hydration
-	const { prompt, updateHypothesis, removeHypothesis } = useResearchStore();
-
-	const hypothesisInstance = prompt?.hypothesisGeneration.find(
-		(hypothesis) => hypothesis.id === hypothesisId
-	);
-
+const HypothesisCard = ({ hypothesisInstance, index }: HypothesisCardProps) => {
+	const { prompt, removeHypothesis } = useResearchStore();
 	const [actionToggleOpen, setActionToggleOpen] = useState<string>("");
 	const [selectedAction, setSelectedAction] = useState<string>("");
 	const [experimentAccordionOpen, setExperimentAccordionOpen] =
 		useState<boolean>(false);
+	const [experimentGenerationStatus, setExperimentGenerationStatus] =
+		useState<string>("");
 
-	const deleteHypothesis = async (hypothesisId: string, promptId: string) => {
-		const response = await axios.post("/api/deleteHypothesis", {
-			hypothesisId,
-			promptId
-		});
-		removeHypothesis(hypothesisId);
+	useEffect(() => {
+		if (hypothesisInstance.proposedExperiments !== "") {
+			setExperimentGenerationStatus("generated");
+		} else {
+			setExperimentGenerationStatus("");
+		}
+	}, [hypothesisInstance]);
+
+	const deleteHypothesis = async (hypothesisId: string) => {
+		if (prompt) {
+			const response = await axios.post("/api/deleteHypothesis", {
+				hypothesisId,
+				promptId: prompt.id
+			});
+			removeHypothesis(hypothesisId);
+		}
 	};
 
 	const actionToggle = (hypothesisId: string, actionType: string) => {
@@ -45,16 +50,6 @@ const HypothesisCard = ({ hypothesisId, index }: HypothesisCardProps) => {
 		}
 	};
 
-	// We can handle action methods here
-	// Experiment generation
-	const [experimentGenerationStatus, setExperimentGenerationStatus] =
-		useState<string>("");
-
-	useEffect(() => {
-		if (hypothesisInstance?.proposedExperiments !== "") {
-			setExperimentGenerationStatus("generated");
-		}
-	}, [hypothesisInstance]);
 	const renderActionComponent = (
 		selectedAction: string,
 		hypothesisId: string
@@ -72,7 +67,9 @@ const HypothesisCard = ({ hypothesisId, index }: HypothesisCardProps) => {
 				return <div>No action selected</div>;
 		}
 	};
+
 	if (!hypothesisInstance) return <div>Hypothesis not found.</div>;
+
 	return (
 		<div className="p-4 border border-gray-200 rounded-md shadow-sm">
 			<div className="w-full flex justify-between items-center">
@@ -81,12 +78,7 @@ const HypothesisCard = ({ hypothesisId, index }: HypothesisCardProps) => {
 					<Button
 						variant={"outline"}
 						className="py-4 flex gap-2 items-center px-2 rounded-lg text-red-500"
-						onClick={() =>
-							deleteHypothesis(
-								hypothesisInstance.id,
-								hypothesisInstance.promptId
-							)
-						}
+						onClick={() => deleteHypothesis(hypothesisInstance.id)}
 					>
 						<Trash2 size={16} color="red" />
 					</Button>
@@ -128,7 +120,6 @@ const HypothesisCard = ({ hypothesisId, index }: HypothesisCardProps) => {
 										? "Hide experiment"
 										: "Show experiment"}
 								</p>
-								{/* <Loader2 color="green" className="animate-spin" size={24} /> */}
 								<ChevronDown size={24} className="cursor-pointer" />
 							</div>
 						)}
@@ -163,7 +154,6 @@ const HypothesisCard = ({ hypothesisId, index }: HypothesisCardProps) => {
 												margin: 0,
 												padding: "1rem",
 												width: "100%"
-												// background: "transparent"
 											}}
 											lineNumberStyle={{
 												userSelect: "none"
@@ -196,7 +186,6 @@ const HypothesisCard = ({ hypothesisId, index }: HypothesisCardProps) => {
 					>
 						Generate experiments
 					</Button>
-					{/* <Button variant={"outline"}>Evaluate hypothesis</Button> */}
 				</div>
 			</div>
 

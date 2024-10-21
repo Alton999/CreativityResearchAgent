@@ -10,10 +10,6 @@ import {
 
 interface ResearchStore {
 	prompt: PromptType | null;
-	searchTerms: SearchTerm[];
-	hypotheses: HypothesisGeneration[];
-	searchResults: SearchResult[];
-	searchResultsSummary: string;
 	setPrompt: (prompt: PromptType) => void;
 	updatePrompt: (updates: Partial<PromptType>) => void;
 
@@ -23,8 +19,9 @@ interface ResearchStore {
 		searchTermId: string,
 		updates: Partial<SearchTerm>
 	) => void;
+
 	updateSearchResultsSummary: (summary: string) => void;
-	setHypotheses: (hypotheses: HypothesisGeneration[]) => void;
+
 	addHypothesis: (hypothesis: HypothesisGeneration) => void;
 	updateHypothesis: (
 		hypothesisId: string,
@@ -42,18 +39,8 @@ interface ResearchStore {
 const useResearchStore = create<ResearchStore>()(
 	immer((set) => ({
 		prompt: null,
-		searchTerms: [],
-		hypotheses: [],
-		searchResults: [],
-		searchResultsSummary: "",
-		setPrompt: (prompt) =>
-			set((state) => {
-				state.prompt = prompt;
-				state.searchTerms = prompt.searchTerms;
-				state.hypotheses = prompt.hypothesisGeneration;
-				state.searchResults = prompt.searchResults || [];
-				state.searchResultsSummary = prompt.searchResultsSummary;
-			}),
+
+		setPrompt: (prompt: PromptType) => set(() => ({ prompt })),
 
 		updatePrompt: (updates) =>
 			set((state) => {
@@ -64,80 +51,105 @@ const useResearchStore = create<ResearchStore>()(
 
 		setSearchTerms: (searchTerms) =>
 			set((state) => {
-				state.searchTerms = searchTerms;
+				if (state.prompt) {
+					state.prompt.searchTerms = searchTerms;
+				}
 			}),
+
 		addSearchTerm: (searchTerm) =>
 			set((state) => {
-				state.searchTerms.push(searchTerm);
+				if (state.prompt) {
+					state.prompt.searchTerms.push(searchTerm);
+				}
 			}),
+
 		updateSearchTerm: (searchTermId, updates) =>
 			set((state) => {
-				const searchTerm = state.searchTerms.find(
-					(term) => term.id === searchTermId
-				);
-				if (searchTerm) {
-					Object.assign(searchTerm, updates);
+				if (state.prompt) {
+					const searchTerm = state.prompt.searchTerms.find(
+						(term) => term.id === searchTermId
+					);
+					if (searchTerm) {
+						Object.assign(searchTerm, updates);
+					}
 				}
 			}),
 
 		updateSearchResultsSummary: (summary: string) =>
 			set((state) => {
-				state.searchResultsSummary = summary;
-			}),
-
-		setHypotheses: (hypotheses) =>
-			set((state) => {
-				state.hypotheses = hypotheses;
+				if (state.prompt) {
+					state.prompt.searchResultsSummary = summary;
+				}
 			}),
 
 		addHypothesis: (hypothesis) =>
 			set((state) => {
-				state.hypotheses.push(hypothesis);
+				if (state.prompt) {
+					state.prompt.hypothesisGeneration.push(hypothesis);
+					console.log("Hypothesis added to prompt", hypothesis);
+				}
 			}),
 
 		updateHypothesis: (hypothesisId, updates) =>
 			set((state) => {
-				const hypothesis = state.hypotheses.find((h) => h.id === hypothesisId);
-				if (hypothesis) {
-					Object.assign(hypothesis, updates);
+				if (state.prompt) {
+					const hypothesis = state.prompt.hypothesisGeneration.find(
+						(h) => h.id === hypothesisId
+					);
+					if (hypothesis) {
+						Object.assign(hypothesis, updates);
+					}
 				}
 			}),
 
 		removeHypothesis: (hypothesisId) =>
 			set((state) => {
-				state.hypotheses = state.hypotheses.filter(
-					(h) => h.id !== hypothesisId
-				);
+				if (state.prompt) {
+					state.prompt.hypothesisGeneration =
+						state.prompt.hypothesisGeneration.filter(
+							(h) => h.id !== hypothesisId
+						);
+				}
 			}),
 
 		addSavedPaper: (searchTermId, paper) =>
 			set((state) => {
-				const searchTerm = state.searchTerms.find(
-					(term) => term.id === searchTermId
-				);
-				if (searchTerm) {
-					searchTerm.savedPapers.push(paper);
+				if (state.prompt) {
+					const searchTerm = state.prompt.searchTerms.find(
+						(term) => term.id === searchTermId
+					);
+					if (searchTerm) {
+						searchTerm.savedPapers.push(paper);
+					}
 				}
 			}),
+
 		removeSavedPaper: (searchTermId, paperId) =>
 			set((state) => {
-				const searchTerm = state.searchTerms.find(
-					(term) => term.id === searchTermId
-				);
-				if (searchTerm) {
-					searchTerm.savedPapers = searchTerm.savedPapers.filter(
-						(paper) => paper.id !== paperId
+				if (state.prompt) {
+					const searchTerm = state.prompt.searchTerms.find(
+						(term) => term.id === searchTermId
 					);
+					if (searchTerm) {
+						searchTerm.savedPapers = searchTerm.savedPapers.filter(
+							(paper) => paper.id !== paperId
+						);
+					}
 				}
 			}),
 
 		setSearchResults: (searchResults) =>
 			set((state) => {
-				state.searchResults = searchResults;
+				if (state.prompt) {
+					state.prompt.searchResults = searchResults;
+				}
 			}),
+
 		addSearchResult: (result) =>
 			set((state) => {
-				state.searchResults.push(result);
+				if (state.prompt) {
+					state.prompt.searchResults.push(result);
+				}
 			})
 	}))
 );

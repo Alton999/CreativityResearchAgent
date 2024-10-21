@@ -45,7 +45,8 @@ const ResearchOutput = ({ initialPrompt }: Props) => {
 			)}
 			{
 				// Display hypothesis generation
-				prompt.hypothesisGeneration.length > 0 && <HypothesisGenerated />
+				prompt.hypothesisGeneration &&
+					prompt.hypothesisGeneration.length > 0 && <HypothesisGenerated />
 			}
 		</div>
 	);
