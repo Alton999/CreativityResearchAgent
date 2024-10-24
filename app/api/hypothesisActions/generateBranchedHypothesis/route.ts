@@ -7,7 +7,7 @@ import { cleanupStringToJSON } from "@/lib/cleanStringToJSON";
 
 export async function POST(req: Request, res: Response) {
 	try {
-		const { selectedHypothesis } = await req.json();
+		let { selectedHypothesis, instructions } = await req.json();
 		console.log("Selected Hypothesis:", selectedHypothesis);
 
 		// Find singular hypothesis
@@ -43,12 +43,15 @@ export async function POST(req: Request, res: Response) {
 		);
 		const randomIndex = Math.floor(Math.random() * allSavedPapers.length);
 		selectedPaper = allSavedPapers[randomIndex];
-		console.log("Selected paper:", selectedPaper);
-		console.log("Hypothesis instance", hypothesisInstance);
+
+		if (instructions === "") {
+			instructions = "No instructions provided";
+		}
 
 		const inputs = {
 			selected_hypothesis: hypothesisInstance.hypothesis,
-			selected_paper: selectedPaper.summary
+			selected_paper: selectedPaper.summary,
+			instructions: instructions
 		};
 		const newHypothesis = await wordwareGenerator({
 			inputs: inputs,
