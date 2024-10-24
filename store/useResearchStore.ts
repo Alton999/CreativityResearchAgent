@@ -8,8 +8,15 @@ import {
 	HypothesisGeneration
 } from "@/types";
 
+type LatestGeneration = {
+	id: string;
+	type: "searchTerm" | "hypothesis";
+};
+
 interface ResearchStore {
 	prompt: PromptType | null;
+	latestGeneration: LatestGeneration | null; // New state for tracking latest generation
+
 	setPrompt: (prompt: PromptType) => void;
 	updatePrompt: (updates: Partial<PromptType>) => void;
 
@@ -29,7 +36,7 @@ interface ResearchStore {
 	) => void;
 	removeHypothesis: (hypothesisId: string) => void;
 
-	addSavedPaper: (searchTermId: string, paper: SavedPaper) => void;
+	setSavedPapers: (searchTermId: string, papers: SavedPaper[]) => void;
 	removeSavedPaper: (searchTermId: string, paperId: string) => void;
 
 	setSearchResults: (searchResults: SearchResult[]) => void;
@@ -39,6 +46,7 @@ interface ResearchStore {
 const useResearchStore = create<ResearchStore>()(
 	immer((set) => ({
 		prompt: null,
+		latestGeneration: null, // Initialize as null
 
 		setPrompt: (prompt: PromptType) => set(() => ({ prompt })),
 
@@ -59,7 +67,14 @@ const useResearchStore = create<ResearchStore>()(
 		addSearchTerm: (searchTerm) =>
 			set((state) => {
 				if (state.prompt) {
+					if (!searchTerm.savedPapers) {
+						searchTerm.savedPapers = [];
+					}
 					state.prompt.searchTerms.push(searchTerm);
+					state.latestGeneration = {
+						id: searchTerm.id,
+						type: "searchTerm"
+					};
 				}
 			}),
 
@@ -86,7 +101,10 @@ const useResearchStore = create<ResearchStore>()(
 			set((state) => {
 				if (state.prompt) {
 					state.prompt.hypothesisGeneration.push(hypothesis);
-					console.log("Hypothesis added to prompt", hypothesis);
+					state.latestGeneration = {
+						id: hypothesis.id,
+						type: "hypothesis"
+					};
 				}
 			}),
 
@@ -112,15 +130,17 @@ const useResearchStore = create<ResearchStore>()(
 				}
 			}),
 
-		addSavedPaper: (searchTermId, paper) =>
+		setSavedPapers: (searchTermId: string, papers: SavedPaper[]) =>
 			set((state) => {
-				if (state.prompt) {
-					const searchTerm = state.prompt.searchTerms.find(
-						(term) => term.id === searchTermId
-					);
-					if (searchTerm) {
-						searchTerm.savedPapers.push(paper);
-					}
+				if (!state.prompt) return;
+				if (!papers || !Array.isArray(papers)) return;
+
+				const searchTerm = state.prompt.searchTerms.find(
+					(term) => term.id === searchTermId
+				);
+
+				if (searchTerm) {
+					searchTerm.savedPapers = papers;
 				}
 			}),
 

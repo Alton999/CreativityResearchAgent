@@ -31,7 +31,7 @@ const SearchTerms = () => {
 
 	if (!prompt) return <div>Prompt not found.</div>;
 	return (
-		<>
+		<section id="search-terms">
 			<Card>
 				<CardHeader>
 					<CardTitle>Search terms</CardTitle>
@@ -45,7 +45,7 @@ const SearchTerms = () => {
 							<SearchTerm
 								key={`${searchTerm.id}`}
 								index={index}
-								searchTerm={searchTerm}
+								searchTermId={searchTerm.id}
 								// selectedSearchTerms={selectedSearchTerms}
 								// handleSearchTermSelection={handleSearchTermSelection}
 							/>
@@ -79,7 +79,7 @@ const SearchTerms = () => {
 					setShowSearchTermSelectionModal={setShowSearchTermSelectionModal}
 				/>
 			)}
-		</>
+		</section>
 	);
 };
 

@@ -71,7 +71,10 @@ const HypothesisCard = ({ hypothesisInstance, index }: HypothesisCardProps) => {
 	if (!hypothesisInstance) return <div>Hypothesis not found.</div>;
 
 	return (
-		<div className="p-4 border border-gray-200 rounded-md shadow-sm">
+		<div
+			id={hypothesisInstance.id}
+			className="p-4 border border-gray-200 rounded-md shadow-sm"
+		>
 			<div className="w-full flex justify-between items-center">
 				<h2 className="font-bold text-lg">Hypothesis: {index + 1}</h2>
 				<div className="py-2">

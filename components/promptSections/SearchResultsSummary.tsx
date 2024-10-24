@@ -67,100 +67,102 @@ Props) => {
 		return <div>Prompt not found.</div>;
 	}
 	return (
-		<Card>
-			<CardHeader className="flex flex-row justify-between items-center">
-				<CardTitle>Search results summary document</CardTitle>
-				{!editable ? (
-					<Button variant={"outline"} onClick={() => setEditable(!editable)}>
-						<div className="flex gap-2 items-center">
-							<span className="">Edit</span>
-							<Pencil size={"16"} />
-						</div>
-					</Button>
-				) : (
-					<Button
-						disabled={searchSummaryEditLoading}
-						onClick={() => handleSave()}
-					>
-						<div className="flex gap-2 items-center">
-							<span className="">Save</span>
-							{searchSummaryEditLoading ? (
-								<Loader2 className="animate-spin" size={16} />
-							) : (
-								<ArrowDownToLine size={"16"} />
-							)}
-						</div>
-					</Button>
-				)}
-			</CardHeader>
-			<CardContent>
-				{editable ? (
-					<textarea
-						value={prompt.searchResultsSummary}
-						onChange={(e) => handleSearchSummaryChange(e.target.value)}
-						className="w-full h-[800px] p-4 border border-gray-300 rounded-lg"
-					/>
-				) : (
-					<ReactMarkdown
-						components={{
-							p: ({ children }) => <p className="mb-2">{children}</p>,
-							ol: ({ children }) => (
-								<ol className="list-disc ml-4 space-y-2 mb-4">{children}</ol>
-							),
-							ul: ({ children }) => (
-								<ul className="list-disc ml-6 space-y-2 mb-4">{children}</ul>
-							),
-							h1: ({ children }) => (
-								<h1 className="font-bold text-2xl mb-2">{children}</h1>
-							),
-							h2: ({ children }) => (
-								<h2 className="font-bold text-xl mb-2">{children}</h2>
-							),
-							h3: ({ children }) => (
-								<h3 className="font-semibold text-lg mb-2">{children}</h3>
-							),
-							code({ children }) {
-								return (
-									<SyntaxHighlighter
-										style={coldarkDark}
-										customStyle={{
-											margin: 0,
-											padding: "1rem",
-											width: "100%"
-											// background: "transparent"
-										}}
-										lineNumberStyle={{
-											userSelect: "none"
-										}}
-										codeTagProps={{
-											className:
-												"font-mono text-sm break-anywhere md:break-normal"
-										}}
-										wrapLines
-										wrapLongLines
-									>
-										{Array.isArray(children) ? children : [children]}
-									</SyntaxHighlighter>
-								);
-							}
-						}}
-					>
-						{prompt.searchResultsSummary}
-					</ReactMarkdown>
-				)}
-				<Button
-					disabled={!hypothesisButtonActive || hypothesisGenerationLoading}
-					onClick={() => generateInitialHypothesis()}
-					className="mt-4 w-full"
-				>
-					{hypothesisGenerationLoading ? (
-						<Loader2 className="animate-spin" />
+		<section id="search-results">
+			<Card>
+				<CardHeader className="flex flex-row justify-between items-center">
+					<CardTitle>Search results summary document</CardTitle>
+					{!editable ? (
+						<Button variant={"outline"} onClick={() => setEditable(!editable)}>
+							<div className="flex gap-2 items-center">
+								<span className="">Edit</span>
+								<Pencil size={"16"} />
+							</div>
+						</Button>
 					) : (
-						"Generate initial hypothesis"
+						<Button
+							disabled={searchSummaryEditLoading}
+							onClick={() => handleSave()}
+						>
+							<div className="flex gap-2 items-center">
+								<span className="">Save</span>
+								{searchSummaryEditLoading ? (
+									<Loader2 className="animate-spin" size={16} />
+								) : (
+									<ArrowDownToLine size={"16"} />
+								)}
+							</div>
+						</Button>
 					)}
-				</Button>
-			</CardContent>
-		</Card>
+				</CardHeader>
+				<CardContent>
+					{editable ? (
+						<textarea
+							value={prompt.searchResultsSummary}
+							onChange={(e) => handleSearchSummaryChange(e.target.value)}
+							className="w-full h-[800px] p-4 border border-gray-300 rounded-lg"
+						/>
+					) : (
+						<ReactMarkdown
+							components={{
+								p: ({ children }) => <p className="mb-2">{children}</p>,
+								ol: ({ children }) => (
+									<ol className="list-disc ml-4 space-y-2 mb-4">{children}</ol>
+								),
+								ul: ({ children }) => (
+									<ul className="list-disc ml-6 space-y-2 mb-4">{children}</ul>
+								),
+								h1: ({ children }) => (
+									<h1 className="font-bold text-2xl mb-2">{children}</h1>
+								),
+								h2: ({ children }) => (
+									<h2 className="font-bold text-xl mb-2">{children}</h2>
+								),
+								h3: ({ children }) => (
+									<h3 className="font-semibold text-lg mb-2">{children}</h3>
+								),
+								code({ children }) {
+									return (
+										<SyntaxHighlighter
+											style={coldarkDark}
+											customStyle={{
+												margin: 0,
+												padding: "1rem",
+												width: "100%"
+												// background: "transparent"
+											}}
+											lineNumberStyle={{
+												userSelect: "none"
+											}}
+											codeTagProps={{
+												className:
+													"font-mono text-sm break-anywhere md:break-normal"
+											}}
+											wrapLines
+											wrapLongLines
+										>
+											{Array.isArray(children) ? children : [children]}
+										</SyntaxHighlighter>
+									);
+								}
+							}}
+						>
+							{prompt.searchResultsSummary}
+						</ReactMarkdown>
+					)}
+					<Button
+						disabled={!hypothesisButtonActive || hypothesisGenerationLoading}
+						onClick={() => generateInitialHypothesis()}
+						className="mt-4 w-full"
+					>
+						{hypothesisGenerationLoading ? (
+							<Loader2 className="animate-spin" />
+						) : (
+							"Generate initial hypothesis"
+						)}
+					</Button>
+				</CardContent>
+			</Card>
+		</section>
 	);
 };
 

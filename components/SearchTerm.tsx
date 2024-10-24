@@ -6,7 +6,7 @@ import { ChevronDown, ChevronUp, LoaderCircle } from "lucide-react";
 import { z } from "zod";
 import { feedbackSchema } from "@/schemas/feedback";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
 	SearchTerm as SearchTermType,
@@ -18,26 +18,30 @@ import useResearchStore from "@/store/useResearchStore";
 type Input = z.infer<typeof feedbackSchema>;
 
 type SearchTermProps = {
-	searchTerm: SearchTermType;
+	searchTermId: string;
 	index: number;
 };
-const SearchTerm = ({ searchTerm, index }: SearchTermProps) => {
-	const { addSearchTerm } = useResearchStore();
+const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
+	const { addSearchTerm, setSavedPapers, prompt } = useResearchStore();
+	const isMounted = useRef(false);
+	const apiCallInProgress = useRef(false);
+
+	const searchTerm = prompt?.searchTerms.find(
+		(searchTerm) => searchTerm.id === searchTermId
+	);
 	const [loadingPaperStatus, setLoadingPaperStatus] = useState<string>("");
 	const [isOpen, setIsOpen] = useState(false);
 	const [feedbackLoading, setFeedbackLoading] = useState(false);
-	const [savedPapers, setSavedPapers] = useState<SavedPaperTypes[]>([]);
-
 	const [expandedAbstractId, setExpandedAbstractId] = useState<string | null>(
 		null
 	);
+	const [error, setError] = useState<string | null>(null);
+	const [feedback, setFeedback] = useState<string>("");
+	const [fetchAttempted, setFetchAttempted] = useState(false);
 
 	const toggleAbstract = (paperId: string) => {
 		setExpandedAbstractId((prevId) => (prevId === paperId ? null : paperId));
 	};
-	const [error, setError] = useState<string | null>(null);
-	const [feedback, setFeedback] = useState<string>("");
-
 	const generateNewSearchTerm = async () => {
 		if (feedback === "") {
 			setError("Feedback cannot be empty");
@@ -62,21 +66,47 @@ const SearchTerm = ({ searchTerm, index }: SearchTermProps) => {
 		addSearchTerm(response.data.searchTermInstance);
 	};
 
-	useEffect(() => {
-		const getAndSetPapers = async (index: number) => {
+	const getAndSetPapers = async () => {
+		// Guard clauses to prevent duplicate calls
+		if (!searchTerm) return;
+		if (apiCallInProgress.current) return;
+		if (searchTerm.savedPapers && searchTerm.savedPapers.length > 0) return;
+
+		try {
+			apiCallInProgress.current = true;
 			setLoadingPaperStatus("loading");
+
 			const response = await axios.post("/api/getResearchFromSearchTerms", {
 				searchTerm,
 				index
 			});
-			setSavedPapers(response.data.allPapers);
-			setLoadingPaperStatus("done");
-		};
-		getAndSetPapers(index);
-	}, [index, searchTerm]);
 
+			if (response.data.allPapers) {
+				setSavedPapers(searchTerm.id, response.data.allPapers);
+			}
+		} catch (err: any) {
+			console.error("Error fetching papers:", err);
+			setError(err?.response?.data?.error || "Failed to fetch research papers");
+		} finally {
+			setLoadingPaperStatus("done");
+			apiCallInProgress.current = false;
+		}
+	};
+	useEffect(() => {
+		// Only run on mount
+		if (!isMounted.current) {
+			isMounted.current = true;
+			getAndSetPapers();
+		}
+
+		// Cleanup function
+		return () => {
+			apiCallInProgress.current = false;
+		};
+	}, []);
+	if (!searchTerm) return <div>Error loading in search term.</div>;
 	return (
-		<div>
+		<div id={searchTerm.id}>
 			<motion.div className="border text-card-foreground p-8 rounded-xl">
 				<div className="space-y-4">
 					<div className="w-full flex justify-between gap-8">
@@ -96,7 +126,7 @@ const SearchTerm = ({ searchTerm, index }: SearchTermProps) => {
 					<p>Reasoning: {searchTerm.explanation}</p>
 				</div>
 
-				{savedPapers && (
+				{searchTerm.savedPapers && (
 					<motion.div>
 						<h4 className="text-lg font-bold mb-2">Saved papers</h4>
 						{
@@ -110,9 +140,9 @@ const SearchTerm = ({ searchTerm, index }: SearchTermProps) => {
 						}
 						{
 							// Check if there are saved papers
-							savedPapers.length > 0 && (
+							searchTerm.savedPapers.length > 0 && (
 								<ul className="w-full flex flex-col gap-4">
-									{savedPapers.map((paper, index) => (
+									{searchTerm.savedPapers.map((paper, index) => (
 										<li
 											key={index}
 											className="w-full p-4 border border-gray-400 rounded-lg space-y-2"
@@ -150,7 +180,7 @@ const SearchTerm = ({ searchTerm, index }: SearchTermProps) => {
 													<AnimatePresence mode="wait" initial={false}>
 														{expandedAbstractId === paper.id ? (
 															<motion.div
-																key="less"
+																// key="less"
 																initial={{ opacity: 0, y: -20 }}
 																animate={{ opacity: 1, y: 0 }}
 																exit={{ opacity: 0, y: 20 }}
@@ -161,7 +191,7 @@ const SearchTerm = ({ searchTerm, index }: SearchTermProps) => {
 															</motion.div>
 														) : (
 															<motion.div
-																key="more"
+																// key="more"
 																initial={{ opacity: 0, y: 20 }}
 																animate={{ opacity: 1, y: 0 }}
 																exit={{ opacity: 0, y: -20 }}

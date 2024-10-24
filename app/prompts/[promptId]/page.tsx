@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import ResearchOutput from "@/components/ResearchOutput";
 import ResearchPaperSidebar from "@/components/ResearchPaperSidebar";
+import NavigationSidebar from "@/components/NavigationSidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { prisma } from "@/lib/db";
 import { PromptType } from "@/types";
@@ -39,13 +40,12 @@ const PromptResults = async ({ params: { promptId } }: Props) => {
 	return (
 		<>
 			<main className="flex flex-col items-center justify-center">
-				<ResearchPaperSidebar
-					savedPapers={prompt.searchTerms.flatMap((term) => term.savedPapers)}
-					promptId={prompt.id}
-				/>
+				<ResearchPaperSidebar />
+				<NavigationSidebar />
+
 				<ScrollArea className="max-w-[1080px] mx-auto max-h-[90vh] overflow-auto">
 					<Card className="mb-8">
-						<CardHeader>
+						<CardHeader id="research-question">
 							<CardTitle className="leading-7">Research question</CardTitle>
 							<CardDescription className="text-lg">
 								{prompt ? prompt.researchQuestion : "Loading prompt..."}
