@@ -7,7 +7,6 @@ import { Circle, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "../ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
-import { Textarea } from "../ui/textarea";
 
 type Props = {
 	setSelectedHypothesisGenerationModal: React.Dispatch<
@@ -33,7 +32,7 @@ const BranchOffExistingHypothesisModal = ({
 	const [selectedHypothesis, setSelectedHypothesis] = useState<string[]>([]);
 	const [generateAssociationButtonActive, setGenerateAssociationButtonActive] =
 		useState<boolean>(false);
-	const [instructions, setInstructions] = useState<string>("");
+
 	const toggleHypothesisSelection = (id: string) => {
 		setSelectedHypothesis((prevSelected) => {
 			// If the clicked item is already selected, deselect it
@@ -50,8 +49,7 @@ const BranchOffExistingHypothesisModal = ({
 		const response = await axios.post(
 			"/api/hypothesisActions/generateBranchedHypothesis",
 			{
-				selectedHypothesis,
-				instructions
+				selectedHypothesis
 			}
 		);
 		toast({
@@ -91,8 +89,10 @@ const BranchOffExistingHypothesisModal = ({
 			closeModal={() => setSelectedHypothesisGenerationModal("")}
 		>
 			<p>
-				Branch of an existing hypothesis you find interesting to explore
-				further.
+				In this action you as the lead scientist is able to find connections,
+				similarities and associate multiple generated hypothesis. This action
+				has the potential to expand the boundaries of creativity within each
+				hypothesis to create something truly unique.
 			</p>
 			<div>
 				<h3 className="font-bold mb-2">
@@ -101,7 +101,7 @@ const BranchOffExistingHypothesisModal = ({
 				{hypothesisLoading ? (
 					<Loader2 className="animate-spin" size={24} />
 				) : (
-					<ScrollArea className="max-h-[350px] flex flex-col gap-4 pr-3.5">
+					<ScrollArea className="max-h-[400px] flex flex-col gap-4 pr-3.5">
 						{allHypothesis.map((hypothesis, index) => (
 							<div
 								key={hypothesis.id}
@@ -137,18 +137,6 @@ const BranchOffExistingHypothesisModal = ({
 						))}
 					</ScrollArea>
 				)}
-			</div>
-			<div className="space-y-3">
-				<label htmlFor="branch instructions" className="font-bold">
-					Instructions to guide hypothesis:
-				</label>
-				<Textarea
-					name="branch instructions"
-					id="branchInstructions"
-					rows={8}
-					// className="border border-primary rounded-lg bg-slate-100 p-1.5"
-					onChange={(e) => setInstructions(e.target.value)}
-				/>
 			</div>
 			{/* <div className="border border-slate-400 p-4 rounded-lg flex justify-between">
 				<div>

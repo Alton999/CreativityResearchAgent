@@ -110,7 +110,7 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
 			<motion.div className="border text-card-foreground p-8 rounded-xl">
 				<div className="space-y-4">
 					<div className="w-full flex justify-between gap-8">
-						<h4 className="text-xl font-bold flex flex-1">
+						<h4 className="text-lg font-bold flex flex-1">
 							{searchTerm.searchTerm}
 						</h4>
 						{searchTerm.newSearchTerm ? (
@@ -214,7 +214,20 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
 													View paper source
 												</a>
 											</div>
-										</div>
+											<div>
+												<h4 className="font-bold">Authors</h4>
+												<ul className="flex flex-wrap gap-3">
+													{paper.authors.map((author, index) => (
+														<li
+															key={index + author}
+															className="px-2 py-1 rounded-sm bg-gray-300"
+														>
+															{author}
+														</li>
+													))}
+												</ul>
+											</div>
+										</li>
 									))}
 								</ul>
 							)
