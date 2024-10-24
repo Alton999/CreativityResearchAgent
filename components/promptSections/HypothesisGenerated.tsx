@@ -18,18 +18,10 @@ import HypothesisCard from "../HypothesisCard";
 import ForcedAssociationModal from "../hypothesisActionModals/ForcedAssociationModal";
 import NewHypothesisModal from "../hypothesisActionModals/NewHypothesisModal";
 import BranchOffExistingHypothesisModal from "../hypothesisActionModals/BranchOffExistingHypothesisModal";
+import useResearchStore from "@/store/useResearchStore";
 
-type Props = {
-	hypothesisGeneration: HypothesisGenerationTypes[];
-	setHypothesisGeneration: React.Dispatch<
-		React.SetStateAction<HypothesisGenerationTypes[]>
-	>;
-};
-
-const HypothesisGenerated = ({
-	hypothesisGeneration,
-	setHypothesisGeneration
-}: Props) => {
+const HypothesisGenerated = () => {
+	const { prompt, addHypothesis } = useResearchStore();
 	const [
 		selectedHypothesisGenerationModal,
 		setSelectedHypothesisGenerationModal
@@ -37,6 +29,12 @@ const HypothesisGenerated = ({
 
 	const [newHypothesisStatus, setNewHypothesisStatus] = useState<string>("");
 
+	const handleAddHypothesis = (hypothesis: HypothesisGenerationTypes) => {
+		addHypothesis(hypothesis);
+		// reset loading state
+		setNewHypothesisStatus("");
+	};
+	if (!prompt) return <div>Prompt not found.</div>;
 	return (
 		<>
 			<Card>
@@ -83,12 +81,11 @@ const HypothesisGenerated = ({
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-4">
-						{hypothesisGeneration.map((hypothesis, index) => (
+						{prompt.hypothesisGeneration.map((hypothesis, index) => (
 							<HypothesisCard
+								hypothesisInstance={hypothesis}
 								key={index}
 								index={index}
-								hypothesis={hypothesis}
-								setHypothesisGeneration={setHypothesisGeneration}
 							/>
 						))}
 						{
@@ -118,9 +115,9 @@ const HypothesisGenerated = ({
 					setSelectedHypothesisGenerationModal={
 						setSelectedHypothesisGenerationModal
 					}
-					promptId={hypothesisGeneration[0].promptId}
+					promptId={prompt.id}
 					setNewHypothesisStatus={setNewHypothesisStatus}
-					setHypothesisGeneration={setHypothesisGeneration}
+					onAddHypothesis={handleAddHypothesis}
 				/>
 			)}
 			{selectedHypothesisGenerationModal === "new hypothesis" && (
@@ -128,9 +125,9 @@ const HypothesisGenerated = ({
 					setSelectedHypothesisGenerationModal={
 						setSelectedHypothesisGenerationModal
 					}
-					promptId={hypothesisGeneration[0].promptId}
+					promptId={prompt.id}
 					setNewHypothesisStatus={setNewHypothesisStatus}
-					setHypothesisGeneration={setHypothesisGeneration}
+					onAddHypothesis={handleAddHypothesis}
 				/>
 			)}
 			{selectedHypothesisGenerationModal === "branch hypothesis" && (
@@ -138,9 +135,9 @@ const HypothesisGenerated = ({
 					setSelectedHypothesisGenerationModal={
 						setSelectedHypothesisGenerationModal
 					}
-					promptId={hypothesisGeneration[0].promptId}
+					promptId={prompt.id}
 					setNewHypothesisStatus={setNewHypothesisStatus}
-					setHypothesisGeneration={setHypothesisGeneration}
+					onAddHypothesis={handleAddHypothesis}
 				/>
 			)}
 		</>

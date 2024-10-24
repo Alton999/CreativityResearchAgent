@@ -6,6 +6,7 @@ import { Circle, Loader2 } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
 import { SearchTerm as SearchTermType } from "@/types";
+import useResearchStore from "@/store/useResearchStore";
 
 type Props = {
 	allSearchTerms: SearchTermType[];
@@ -13,17 +14,16 @@ type Props = {
 		React.SetStateAction<boolean>
 	>;
 	setSearchResultsSummaryLoading: React.Dispatch<React.SetStateAction<boolean>>;
-	setSearchResultsSummary: React.Dispatch<React.SetStateAction<string>>;
 	searchResultsSummaryLoading: boolean;
 };
 
 const GenerateSearchSummaryModal = ({
 	allSearchTerms,
 	setShowSearchTermSelectionModal,
-	setSearchResultsSummary,
 	setSearchResultsSummaryLoading,
 	searchResultsSummaryLoading
 }: Props) => {
+	const { updateSearchResultsSummary } = useResearchStore();
 	const { toast } = useToast();
 
 	const [selectedSearchTerms, setSelectedSearchTerms] = useState<
@@ -56,8 +56,7 @@ const GenerateSearchSummaryModal = ({
 			variant: "success",
 			description: "Check out the search summary."
 		});
-		console.log("Response from generate search results: ", response);
-		setSearchResultsSummary(response.data.searchResultsSummary);
+		updateSearchResultsSummary(response.data.searchResultsSummary);
 
 		// setHypothesisInstance(response.data.updatedHypothesisGeneration);
 	};
@@ -71,7 +70,7 @@ const GenerateSearchSummaryModal = ({
 
 	return (
 		<ModalLayout
-			title="Select 3 search terms"
+			title="Select 3 search terms "
 			closeModal={() => setShowSearchTermSelectionModal(false)}
 		>
 			<p>
@@ -79,7 +78,9 @@ const GenerateSearchSummaryModal = ({
 				summarise into a research document.
 			</p>
 			<div>
-				<h3 className="font-bold mb-2">Select 3 search terms to continue</h3>
+				<h3 className="font-bold mb-2">
+					Select up to 3 hypothesis to associate
+				</h3>
 
 				<ScrollArea className="max-h-[400px] flex flex-col gap-4 pr-3.5">
 					{allSearchTerms.map((searchTerm, index) => (

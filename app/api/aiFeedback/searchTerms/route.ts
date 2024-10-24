@@ -32,7 +32,6 @@ export async function POST(req: Request, res: Response) {
 		});
 		return NextResponse.json({ searchTermInstance: newSearchTermInstance });
 	} catch (error: any) {
-		console.error("Error creating prompt:");
 		console.error("Error message:", error.message);
 		console.error("Error stack trace:", error.stack);
 		if (error instanceof ZodError) {

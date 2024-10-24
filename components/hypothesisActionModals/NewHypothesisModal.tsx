@@ -11,17 +11,15 @@ type Props = {
 		React.SetStateAction<string>
 	>;
 	setNewHypothesisStatus: React.Dispatch<React.SetStateAction<string>>;
-	setHypothesisGeneration: React.Dispatch<
-		React.SetStateAction<HypothesisGenerationTypes[]>
-	>;
+	onAddHypothesis: (hypothesis: HypothesisGenerationTypes) => void;
 	promptId: string;
 };
 
 const NewHypothesisModal = ({
 	setSelectedHypothesisGenerationModal,
 	setNewHypothesisStatus,
-	setHypothesisGeneration,
-	promptId
+	promptId,
+	onAddHypothesis
 }: Props) => {
 	const { toast } = useToast();
 
@@ -42,7 +40,7 @@ const NewHypothesisModal = ({
 			description: "Check out the new hypothesis at the bottom of the page."
 		});
 		console.log("Response from new hypothesis", response);
-		setHypothesisGeneration(response.data.allHypothesis);
+		onAddHypothesis(response.data.newHypothesisInstance);
 		setNewHypothesisStatus("done");
 	};
 	return (

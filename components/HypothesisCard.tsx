@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import axios from "axios";
 import GenerateExperimentModal from "./hypothesisActionModals/GenerateExperimentModal";
 import { Trash2, ChevronDown, Loader2 } from "lucide-react";
@@ -8,35 +7,38 @@ import { HypothesisGeneration as HypothesisGenerationTypes } from "@/types";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import useResearchStore from "@/store/useResearchStore";
 
 type HypothesisCardProps = {
-	setHypothesisGeneration: React.Dispatch<
-		React.SetStateAction<HypothesisGenerationTypes[]>
-	>;
-	hypothesis: HypothesisGenerationTypes;
 	index: number;
+	hypothesisInstance: HypothesisGenerationTypes;
 };
 
-const HypothesisCard = ({
-	setHypothesisGeneration,
-	hypothesis,
-	index
-}: HypothesisCardProps) => {
-	// Initialise hypothesis state upon hydration
-	const [hypothesisInstance, setHypothesisInstance] =
-		useState<HypothesisGenerationTypes>(hypothesis);
-
+const HypothesisCard = ({ hypothesisInstance, index }: HypothesisCardProps) => {
+	const { prompt, removeHypothesis } = useResearchStore();
 	const [actionToggleOpen, setActionToggleOpen] = useState<string>("");
 	const [selectedAction, setSelectedAction] = useState<string>("");
 	const [experimentAccordionOpen, setExperimentAccordionOpen] =
 		useState<boolean>(false);
+	const [experimentGenerationStatus, setExperimentGenerationStatus] =
+		useState<string>("");
 
-	const deleteHypothesis = async (hypothesisId: string, promptId: string) => {
-		const response = await axios.post("/api/deleteHypothesis", {
-			hypothesisId,
-			promptId
-		});
-		setHypothesisGeneration(response.data.hypothesisGenerationArray);
+	useEffect(() => {
+		if (hypothesisInstance.proposedExperiments !== "") {
+			setExperimentGenerationStatus("generated");
+		} else {
+			setExperimentGenerationStatus("");
+		}
+	}, [hypothesisInstance]);
+
+	const deleteHypothesis = async (hypothesisId: string) => {
+		if (prompt) {
+			const response = await axios.post("/api/deleteHypothesis", {
+				hypothesisId,
+				promptId: prompt.id
+			});
+			removeHypothesis(hypothesisId);
+		}
 	};
 
 	const actionToggle = (hypothesisId: string, actionType: string) => {
@@ -48,16 +50,6 @@ const HypothesisCard = ({
 		}
 	};
 
-	// We can handle action methods here
-	// Experiment generation
-	const [experimentGenerationStatus, setExperimentGenerationStatus] =
-		useState<string>("");
-
-	useEffect(() => {
-		if (hypothesis.proposedExperiments !== "") {
-			setExperimentGenerationStatus("generated");
-		}
-	}, [hypothesis]);
 	const renderActionComponent = (
 		selectedAction: string,
 		hypothesisId: string
@@ -68,7 +60,6 @@ const HypothesisCard = ({
 					<GenerateExperimentModal
 						setActionToggleOpen={setActionToggleOpen}
 						setExperimentGenerationStatus={setExperimentGenerationStatus}
-						setHypothesisInstance={setHypothesisInstance}
 						hypothesisId={hypothesisId}
 					/>
 				);
@@ -77,20 +68,20 @@ const HypothesisCard = ({
 		}
 	};
 
+	if (!hypothesisInstance) return <div>Hypothesis not found.</div>;
+
 	return (
-		<div className="p-4 border border-gray-200 rounded-md shadow-sm">
+		<div
+			id={hypothesisInstance.id}
+			className="p-4 border border-gray-200 rounded-md shadow-sm"
+		>
 			<div className="w-full flex justify-between items-center">
 				<h2 className="font-bold text-lg">Hypothesis: {index + 1}</h2>
 				<div className="py-2">
 					<Button
 						variant={"outline"}
 						className="py-4 flex gap-2 items-center px-2 rounded-lg text-red-500"
-						onClick={() =>
-							deleteHypothesis(
-								hypothesisInstance.id,
-								hypothesisInstance.promptId
-							)
-						}
+						onClick={() => deleteHypothesis(hypothesisInstance.id)}
 					>
 						<Trash2 size={16} color="red" />
 					</Button>
@@ -132,7 +123,6 @@ const HypothesisCard = ({
 										? "Hide experiment"
 										: "Show experiment"}
 								</p>
-								{/* <Loader2 color="green" className="animate-spin" size={24} /> */}
 								<ChevronDown size={24} className="cursor-pointer" />
 							</div>
 						)}
@@ -167,7 +157,6 @@ const HypothesisCard = ({
 												margin: 0,
 												padding: "1rem",
 												width: "100%"
-												// background: "transparent"
 											}}
 											lineNumberStyle={{
 												userSelect: "none"
@@ -200,7 +189,6 @@ const HypothesisCard = ({
 					>
 						Generate experiments
 					</Button>
-					{/* <Button variant={"outline"}>Evaluate hypothesis</Button> */}
 				</div>
 			</div>
 

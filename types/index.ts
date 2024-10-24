@@ -33,17 +33,7 @@ export type HypothesisGeneration = {
 	promptId: string;
 	hypothesis: string;
 	proposedExperiments: string;
-	createdAt: string;
-};
-
-export type Reinitiator = {
-	id: string;
-	promptId: string;
-	hypothesisId: string;
-	searchTermId: string;
-	searchResultId: string;
-	hypothesisEvaluationId: string;
-	reinitiation: string;
+	justification: string;
 	createdAt: string;
 };
 
@@ -57,7 +47,6 @@ export type PromptType = {
 	searchTerms: SearchTerm[];
 	searchResults: SearchResult[];
 	hypothesisGeneration: HypothesisGeneration[];
-	Reinitiator: Reinitiator[];
 };
 
 export type WordwareGeneration = {

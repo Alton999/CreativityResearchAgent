@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { SavedPaper as SavedPaperTypes } from "@/types";
+import useResearchStore from "@/store/useResearchStore";
+import Link from "next/link";
 
 import {
 	Sheet,
@@ -13,27 +15,35 @@ import {
 import { Loader2, Menu, Trash2 } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { Button } from "./ui/button";
-import { prisma } from "@/lib/db";
 import axios from "axios";
 
-type Props = {
-	savedPapers: SavedPaperTypes[];
-	promptId: string;
-};
-
-const ResearchPaperSidebar = ({ savedPapers, promptId }: Props) => {
+const ResearchPaperSidebar = () => {
+	const { prompt, removeSavedPaper } = useResearchStore();
 	const [loading, setLoading] = useState(false);
-	const deleteSavedPaper = async (savedPaperId: string) => {
+
+	const deleteSavedPaper = async (
+		savedPaperId: string,
+		searchTermId: string
+	) => {
 		setLoading(true);
-		const response = await axios.post("/api/deleteSavedPaper", {
+		await axios.post("/api/deleteSavedPaper", {
 			savedPaperId,
-			promptId
+			promptId: prompt?.id
 		});
-		setSavedPaperState(response.data.savedPapers);
+		removeSavedPaper(searchTermId, savedPaperId);
 		setLoading(false);
 	};
-	const [savedPaperState, setSavedPaperState] =
-		useState<SavedPaperTypes[]>(savedPapers);
+
+	const hasValidPapers = (searchTerm: any) => {
+		return (
+			searchTerm.savedPapers &&
+			Array.isArray(searchTerm.savedPapers) &&
+			searchTerm.savedPapers.length > 0
+		);
+	};
+
+	if (!prompt) return <div>Prompt not found.</div>;
+
 	return (
 		<div className="flex w-full justify-end px-4 py-8">
 			<Sheet>
@@ -54,30 +64,83 @@ const ResearchPaperSidebar = ({ savedPapers, promptId }: Props) => {
 								and remove any papers you do not find interesting.
 							</SheetDescription>
 						</SheetHeader>
-						<div className="grid gap-4 grid-cols-1 mt-4">
-							{savedPaperState.map((paper) => (
-								<div
-									key={paper.id}
-									className="px-4 py-2 border border-slate-400 rounded-xl space-y-2"
-								>
-									<div className="flex justify-between gap-4">
-										<h4 className="text-lg font-bold">{paper.title}</h4>
-										<Button
-											disabled={loading}
-											variant={"outline"}
-											onClick={() => deleteSavedPaper(paper.id)}
-										>
-											{loading ? (
-												<Loader2 className="h-6 w-6 animate-spin" />
+						{!prompt?.searchTerms ? (
+							<div className="flex items-center justify-center h-40">
+								<Loader2 className="h-6 w-6 animate-spin" />
+							</div>
+						) : prompt.searchTerms.length === 0 ? (
+							<div className="text-center py-8 text-slate-500">
+								No search terms found. Start a search to collect papers.
+							</div>
+						) : (
+							<div className="grid gap-4 grid-cols-1 mt-4">
+								{prompt.searchTerms.map((searchTerm) => (
+									<div key={`search-term-${searchTerm.id}`} className="mb-8">
+										<h3 className="text-lg font-medium text-slate-600 mb-4">
+											Results for &quot;{searchTerm.searchTerm}&quot;
+										</h3>
+
+										<div className="grid gap-4">
+											{!hasValidPapers(searchTerm) ? (
+												<div
+													key={`no-papers-${searchTerm.id}`}
+													className="text-center py-4 text-slate-500"
+												>
+													{loading ? (
+														<div className="flex items-center justify-center">
+															<Loader2 className="h-5 w-5 animate-spin mr-2" />
+															<span>Loading papers...</span>
+														</div>
+													) : (
+														"No papers found for this search term"
+													)}
+												</div>
 											) : (
-												<Trash2 size={20} />
+												searchTerm.savedPapers.map((paper: SavedPaperTypes) => (
+													<div
+														key={`paper-${paper.id}`}
+														className="group relative bg-white rounded-lg border border-slate-200 transition-all hover:border-slate-300 hover:shadow-sm"
+													>
+														<Link
+															href={paper.url}
+															className="block p-4"
+															target="_blank"
+															rel="noopener noreferrer"
+														>
+															<h4 className="text-base font-semibold text-slate-900 mb-2 truncate">
+																{paper.title}
+															</h4>
+															<p className="text-sm text-slate-600 line-clamp-2">
+																{paper.summary}
+															</p>
+														</Link>
+
+														<div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+															<Button
+																disabled={loading}
+																variant="ghost"
+																size="sm"
+																onClick={(e) => {
+																	e.preventDefault();
+																	deleteSavedPaper(paper.id, searchTerm.id);
+																}}
+																className="h-8 w-8 p-0"
+															>
+																{loading ? (
+																	<Loader2 className="h-4 w-4 animate-spin" />
+																) : (
+																	<Trash2 className="h-4 w-4 text-slate-400 hover:text-red-400" />
+																)}
+															</Button>
+														</div>
+													</div>
+												))
 											)}
-										</Button>
+										</div>
 									</div>
-									<p>{paper.summary.slice(0, 200) + "..."}</p>
-								</div>
-							))}
-						</div>
+								))}
+							</div>
+						)}
 					</SheetContent>
 				</ScrollArea>
 			</Sheet>

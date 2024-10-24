@@ -7,7 +7,7 @@ import { cleanupStringToJSON } from "@/lib/cleanStringToJSON";
 
 export async function POST(req: Request, res: Response) {
 	try {
-		let { selectedHypothesis, instructions } = await req.json();
+		const { selectedHypothesis } = await req.json();
 		console.log("Selected Hypothesis:", selectedHypothesis);
 
 		// Find singular hypothesis
@@ -43,35 +43,32 @@ export async function POST(req: Request, res: Response) {
 		);
 		const randomIndex = Math.floor(Math.random() * allSavedPapers.length);
 		selectedPaper = allSavedPapers[randomIndex];
-
-		if (instructions === "") {
-			instructions = "No instructions provided";
-		}
+		console.log("Selected paper:", selectedPaper);
+		console.log("Hypothesis instance", hypothesisInstance);
 
 		const inputs = {
 			selected_hypothesis: hypothesisInstance.hypothesis,
-			selected_paper: selectedPaper.summary,
-			instructions: instructions
+			selected_paper: selectedPaper.summary
 		};
 		const newHypothesis = await wordwareGenerator({
 			inputs: inputs,
 			wordwarePromptId: "66acef55-3df0-4fc0-9e6e-40f5bb30e087"
 		});
 
-		await prisma.hypothesisGeneration.create({
+		const newHypothesisInstance = await prisma.hypothesisGeneration.create({
 			data: {
 				promptId: hypothesisInstance.promptId,
 				hypothesis: newHypothesis
 			}
 		});
 
-		const allHypothesis = await prisma.hypothesisGeneration.findMany({
-			where: {
-				promptId: hypothesisInstance.promptId
-			}
-		});
+		// const allHypothesis = await prisma.hypothesisGeneration.findMany({
+		// 	where: {
+		// 		promptId: hypothesisInstance.promptId
+		// 	}
+		// });
 		return NextResponse.json({
-			allHypothesis
+			newHypothesisInstance
 		});
 	} catch (error) {
 		console.error("Error branching off hypothesis:"), error;

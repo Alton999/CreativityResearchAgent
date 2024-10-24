@@ -6,44 +6,45 @@ import { ChevronDown, ChevronUp, LoaderCircle } from "lucide-react";
 import { z } from "zod";
 import { feedbackSchema } from "@/schemas/feedback";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SearchTerm as SearchTermType } from "@/types";
-import { SavedPaper as SavedPaperTypes } from "@/types";
+import {
+	SearchTerm as SearchTermType,
+	SavedPaper as SavedPaperTypes
+} from "@/types";
+
+import useResearchStore from "@/store/useResearchStore";
+
 type Input = z.infer<typeof feedbackSchema>;
 
 type SearchTermProps = {
-	searchTerm: SearchTermType;
-	addNewSearchTerm: (newSearchTerm: SearchTermType) => void;
-	// selectedSearchTerms: SearchTermType[];
-	// handleSearchTermSelection: (searchTerm: SearchTermType) => void;
+	searchTermId: string;
 	index: number;
 };
-const SearchTerm = ({
-	searchTerm,
-	addNewSearchTerm,
-	// selectedSearchTerms,
-	// handleSearchTermSelection,
-	index
-}: SearchTermProps) => {
+const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
+	const { addSearchTerm, setSavedPapers, prompt } = useResearchStore();
+	const isMounted = useRef(false);
+	const apiCallInProgress = useRef(false);
+
+	const searchTerm = prompt?.searchTerms.find(
+		(searchTerm) => searchTerm.id === searchTermId
+	);
 	const [loadingPaperStatus, setLoadingPaperStatus] = useState<string>("");
 	const [isOpen, setIsOpen] = useState(false);
 	const [feedbackLoading, setFeedbackLoading] = useState(false);
-	const [savedPapers, setSavedPapers] = useState<SavedPaperTypes[]>([]);
-
 	const [expandedAbstractId, setExpandedAbstractId] = useState<string | null>(
 		null
 	);
+	const [error, setError] = useState<string | null>(null);
+	const [feedback, setFeedback] = useState<string>("");
+	const [fetchAttempted, setFetchAttempted] = useState(false);
 
 	const toggleAbstract = (paperId: string) => {
 		setExpandedAbstractId((prevId) => (prevId === paperId ? null : paperId));
 	};
-
-	const [feedback, setFeedback] = useState<string>("");
-
 	const generateNewSearchTerm = async () => {
-		if (feedback.length < 40) {
-			alert("Please provide more feedback");
+		if (feedback === "") {
+			setError("Feedback cannot be empty");
 			return;
 		}
 		setFeedbackLoading(true);
@@ -51,32 +52,65 @@ const SearchTerm = ({
 			feedback,
 			searchTerm
 		});
-		const newSearchTerm = response.data.searchTermInstance;
+		if (!response.data.searchTermInstance) {
+			setError(
+				"Error generating new search term, please refresh and try again."
+			);
+			setFeedbackLoading(false);
+			return;
+		}
 		setFeedbackLoading(false);
 		setFeedback("");
-		addNewSearchTerm(newSearchTerm);
+		setError(null);
+		setIsOpen(false);
+		addSearchTerm(response.data.searchTermInstance);
 	};
-	useEffect(() => {
-		const getAndSetPapers = async (index: number) => {
+
+	const getAndSetPapers = async () => {
+		// Guard clauses to prevent duplicate calls
+		if (!searchTerm) return;
+		if (apiCallInProgress.current) return;
+		if (searchTerm.savedPapers && searchTerm.savedPapers.length > 0) return;
+
+		try {
+			apiCallInProgress.current = true;
 			setLoadingPaperStatus("loading");
-			console.log("Loading");
+
 			const response = await axios.post("/api/getResearchFromSearchTerms", {
 				searchTerm,
 				index
 			});
-			setSavedPapers(response.data.allPapers);
-			console.log("Response from fetchResearchPaper: ", response);
-			setLoadingPaperStatus("done");
-		};
-		getAndSetPapers(index);
-	}, [index, searchTerm]);
 
+			if (response.data.allPapers) {
+				setSavedPapers(searchTerm.id, response.data.allPapers);
+			}
+		} catch (err: any) {
+			console.error("Error fetching papers:", err);
+			setError(err?.response?.data?.error || "Failed to fetch research papers");
+		} finally {
+			setLoadingPaperStatus("done");
+			apiCallInProgress.current = false;
+		}
+	};
+	useEffect(() => {
+		// Only run on mount
+		if (!isMounted.current) {
+			isMounted.current = true;
+			getAndSetPapers();
+		}
+
+		// Cleanup function
+		return () => {
+			apiCallInProgress.current = false;
+		};
+	}, []);
+	if (!searchTerm) return <div>Error loading in search term.</div>;
 	return (
-		<div>
+		<div id={searchTerm.id}>
 			<motion.div className="border text-card-foreground p-8 rounded-xl">
 				<div className="space-y-4">
 					<div className="w-full flex justify-between gap-8">
-						<h4 className="text-xl font-bold flex flex-1">
+						<h4 className="text-lg font-bold flex flex-1">
 							{searchTerm.searchTerm}
 						</h4>
 						{searchTerm.newSearchTerm ? (
@@ -92,7 +126,7 @@ const SearchTerm = ({
 					<p>Reasoning: {searchTerm.explanation}</p>
 				</div>
 
-				{savedPapers && (
+				{searchTerm.savedPapers && (
 					<motion.div>
 						<h4 className="text-lg font-bold mb-2">Saved papers</h4>
 						{
@@ -106,11 +140,11 @@ const SearchTerm = ({
 						}
 						{
 							// Check if there are saved papers
-							savedPapers.length > 0 && (
-								<div className="w-full flex flex-col gap-4">
-									{savedPapers.map((paper) => (
-										<div
-											key={paper.id}
+							searchTerm.savedPapers.length > 0 && (
+								<ul className="w-full flex flex-col gap-4">
+									{searchTerm.savedPapers.map((paper, index) => (
+										<li
+											key={index}
 											className="w-full p-4 border border-gray-400 rounded-lg space-y-2"
 										>
 											<h4 className="text-lg font-bold">{paper.title}</h4>
@@ -146,7 +180,7 @@ const SearchTerm = ({
 													<AnimatePresence mode="wait" initial={false}>
 														{expandedAbstractId === paper.id ? (
 															<motion.div
-																key="less"
+																// key="less"
 																initial={{ opacity: 0, y: -20 }}
 																animate={{ opacity: 1, y: 0 }}
 																exit={{ opacity: 0, y: 20 }}
@@ -157,7 +191,7 @@ const SearchTerm = ({
 															</motion.div>
 														) : (
 															<motion.div
-																key="more"
+																// key="more"
 																initial={{ opacity: 0, y: 20 }}
 																animate={{ opacity: 1, y: 0 }}
 																exit={{ opacity: 0, y: -20 }}
@@ -180,7 +214,7 @@ const SearchTerm = ({
 													View paper source
 												</a>
 											</div>
-											{/* <div>
+											<div>
 												<h4 className="font-bold">Authors</h4>
 												<ul className="flex flex-wrap gap-3">
 													{paper.authors.map((author, index) => (
@@ -192,10 +226,10 @@ const SearchTerm = ({
 														</li>
 													))}
 												</ul>
-											</div> */}
-										</div>
+											</div>
+										</li>
 									))}
-								</div>
+								</ul>
 							)
 						}
 					</motion.div>
@@ -223,6 +257,19 @@ const SearchTerm = ({
 							)}
 						</Button>
 					</div>
+					<AnimatePresence>
+						{error && (
+							<motion.div
+								className="px-4 py-2"
+								initial={{ opacity: 0, x: -50 }}
+								animate={{ opacity: 1, x: 0 }}
+								exit={{ opacity: 0, x: 50 }}
+								transition={{ duration: 0.5, ease: "easeOut" }}
+							>
+								<p className="text-red-500 font-bold text-lg">{error}</p>
+							</motion.div>
+						)}
+					</AnimatePresence>
 				</motion.div>
 			</motion.div>
 		</div>

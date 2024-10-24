@@ -5,22 +5,20 @@ import axios from "axios";
 import { HypothesisGeneration as HypothesisGenerationTypes } from "@/types";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import useResearchStore from "@/store/useResearchStore";
 
 type Props = {
 	setActionToggleOpen: React.Dispatch<React.SetStateAction<string>>;
 	setExperimentGenerationStatus: React.Dispatch<React.SetStateAction<string>>;
 	hypothesisId: string;
-	setHypothesisInstance: React.Dispatch<
-		React.SetStateAction<HypothesisGenerationTypes>
-	>;
 };
 
 const GenerateExperimentModal = ({
 	setActionToggleOpen,
 	hypothesisId,
-	setExperimentGenerationStatus,
-	setHypothesisInstance
+	setExperimentGenerationStatus
 }: Props) => {
+	const { updateHypothesis } = useResearchStore();
 	const { toast } = useToast();
 
 	const [instructions, setInstructions] = useState<string>("");
@@ -41,7 +39,7 @@ const GenerateExperimentModal = ({
 			description:
 				"Check out the generated experiment attached to the hypothesis."
 		});
-		setHypothesisInstance(response.data.updatedHypothesisGeneration);
+		updateHypothesis(hypothesisId, response.data.updatedHypothesisGeneration);
 	};
 	return (
 		<ModalLayout
