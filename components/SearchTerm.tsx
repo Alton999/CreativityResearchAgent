@@ -104,6 +104,7 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
 			apiCallInProgress.current = false;
 		};
 	}, []);
+
 	if (!searchTerm) return <div>Error loading in search term.</div>;
 	return (
 		<div id={searchTerm.id}>
@@ -123,12 +124,12 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
 							</div>
 						)}
 					</div>
-					<p>Reasoning: {searchTerm.explanation}</p>
+					<p>{searchTerm.explanation}</p>
 				</div>
 
 				{searchTerm.savedPapers && (
 					<motion.div>
-						<h4 className="text-lg font-bold mb-2">Saved papers</h4>
+						<h4 className="text-lg font-bold my-5">Saved papers</h4>
 						{
 							// Check if loading
 							loadingPaperStatus === "loading" && (
@@ -145,74 +146,77 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
 									{searchTerm.savedPapers.map((paper, index) => (
 										<li
 											key={index}
-											className="w-full p-4 border border-gray-400 rounded-lg space-y-2"
+											className="w-full p-4 border border-gray-400 rounded-lg space-y-3"
 										>
 											<h4 className="text-lg font-bold">{paper.title}</h4>
-											<motion.div
-												key={paper.id}
-												initial="collapsed"
-												animate={
-													expandedAbstractId === paper.id
-														? "expanded"
-														: "collapsed"
-												}
-												variants={{
-													expanded: { height: "auto", opacity: 1 },
-													collapsed: { height: "4.5em", opacity: 1 }
-												}}
-												transition={{
-													duration: 0.3,
-													ease: [0.04, 0.62, 0.23, 0.98]
-												}}
-												className="overflow-hidden"
-											>
-												{expandedAbstractId === paper.id
-													? paper.summary
-													: paper.summary.slice(0, 200) +
-													  (paper.summary.length > 200 ? "..." : "")}
-											</motion.div>
-											{paper.summary.length > 200 && (
-												<Button
-													onClick={() => toggleAbstract(paper.id)}
-													className="mt-2 flex items-center"
-													variant="outline"
+											<div>
+												<motion.div
+													key={paper.id}
+													initial="collapsed"
+													animate={
+														expandedAbstractId === paper.id
+															? "expanded"
+															: "collapsed"
+													}
+													variants={{
+														expanded: { height: "auto", opacity: 1 },
+														collapsed: { height: "4.5em", opacity: 1 }
+													}}
+													transition={{
+														duration: 0.3,
+														ease: [0.04, 0.62, 0.23, 0.98]
+													}}
+													className="overflow-hidden"
 												>
-													<AnimatePresence mode="wait" initial={false}>
-														{expandedAbstractId === paper.id ? (
-															<motion.div
-																// key="less"
-																initial={{ opacity: 0, y: -20 }}
-																animate={{ opacity: 1, y: 0 }}
-																exit={{ opacity: 0, y: 20 }}
-																transition={{ duration: 0.2 }}
-																className="flex items-center"
-															>
-																Show Less <ChevronUp className="ml-2 h-4 w-4" />
-															</motion.div>
-														) : (
-															<motion.div
-																// key="more"
-																initial={{ opacity: 0, y: 20 }}
-																animate={{ opacity: 1, y: 0 }}
-																exit={{ opacity: 0, y: -20 }}
-																transition={{ duration: 0.2 }}
-																className="flex items-center"
-															>
-																Show More
-																<ChevronDown className="ml-2 h-4 w-4" />
-															</motion.div>
-														)}
-													</AnimatePresence>
-												</Button>
-											)}
-											<div className="w-full flex justify-end">
-												<a
-													href={paper.url}
-													target="_blank"
-													className="text-blue-500 hover:underline"
-												>
-													View paper source
-												</a>
+													{expandedAbstractId === paper.id
+														? paper.summary
+														: paper.summary.slice(0, 200) +
+														  (paper.summary.length > 200 ? "..." : "")}
+												</motion.div>
+												{paper.summary.length > 200 && (
+													<Button
+														onClick={() => toggleAbstract(paper.id)}
+														className="mt-2 flex items-center"
+														variant="outline"
+													>
+														<AnimatePresence mode="wait" initial={false}>
+															{expandedAbstractId === paper.id ? (
+																<motion.div
+																	// key="less"
+																	initial={{ opacity: 0, y: -20 }}
+																	animate={{ opacity: 1, y: 0 }}
+																	exit={{ opacity: 0, y: 20 }}
+																	transition={{ duration: 0.2 }}
+																	className="flex items-center"
+																>
+																	Show Less{" "}
+																	<ChevronUp className="ml-2 h-4 w-4" />
+																</motion.div>
+															) : (
+																<motion.div
+																	// key="more"
+																	initial={{ opacity: 0, y: 20 }}
+																	animate={{ opacity: 1, y: 0 }}
+																	exit={{ opacity: 0, y: -20 }}
+																	transition={{ duration: 0.2 }}
+																	className="flex items-center"
+																>
+																	Show More
+																	<ChevronDown className="ml-2 h-4 w-4" />
+																</motion.div>
+															)}
+														</AnimatePresence>
+													</Button>
+												)}
+												<div className="w-full flex justify-end">
+													<a
+														href={paper.url}
+														target="_blank"
+														className="text-blue-500 hover:underline"
+													>
+														View paper source
+													</a>
+												</div>
 											</div>
 											<div>
 												<h4 className="font-bold">Authors</h4>
@@ -226,6 +230,9 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
 														</li>
 													))}
 												</ul>
+											</div>
+											<div>
+												<p>Year published: {paper.publishedYear}</p>
 											</div>
 										</li>
 									))}
