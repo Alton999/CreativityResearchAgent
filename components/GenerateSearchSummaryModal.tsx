@@ -57,8 +57,6 @@ const GenerateSearchSummaryModal = ({
 			description: "Check out the search summary."
 		});
 		updateSearchResultsSummary(response.data.searchResultsSummary);
-
-		// setHypothesisInstance(response.data.updatedHypothesisGeneration);
 	};
 
 	// Track button enable state
@@ -70,7 +68,7 @@ const GenerateSearchSummaryModal = ({
 
 	return (
 		<ModalLayout
-			title="Select 3 search terms "
+			title="Select 3 search terms"
 			closeModal={() => setShowSearchTermSelectionModal(false)}
 		>
 			<p>

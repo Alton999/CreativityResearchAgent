@@ -33,8 +33,8 @@ const ForcedAssociationModal = ({
 	const [generateAssociationButtonActive, setGenerateAssociationButtonActive] =
 		useState<boolean>(false);
 
-	const [reframeResearchQuestionSelected, setReframeResearchQuestionSelected] =
-		useState<boolean>(false);
+	// const [reframeResearchQuestionSelected, setReframeResearchQuestionSelected] =
+	// 	useState<boolean>(false);
 	const toggleHypothesisSelection = (id: string) => {
 		setSelectedHypothesis((prevSelected) => {
 			if (prevSelected.includes(id)) {
@@ -51,8 +51,7 @@ const ForcedAssociationModal = ({
 		const response = await axios.post(
 			"/api/hypothesisActions/generateAssociations",
 			{
-				selectedHypothesis,
-				reframeResearchQuestionSelected
+				selectedHypothesis
 			}
 		);
 		toast({
@@ -141,7 +140,7 @@ const ForcedAssociationModal = ({
 					</ScrollArea>
 				)}
 			</div>
-			<div className="border border-slate-400 p-4 rounded-lg flex justify-between">
+			{/* <div className="border border-slate-400 p-4 rounded-lg flex justify-between">
 				<div>
 					<h3 className="font-bold mb-2">Reframe research question</h3>
 					<p className="text-slate-500 text-sm">
@@ -158,7 +157,7 @@ const ForcedAssociationModal = ({
 						);
 					}}
 				/>
-			</div>
+			</div> */}
 			{/* <label htmlFor="name instruction">Custom instructions: (Optional)</label> */}
 
 			<Button

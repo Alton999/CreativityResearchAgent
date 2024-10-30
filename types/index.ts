@@ -1,7 +1,6 @@
 export type SearchTerm = {
 	id: string;
 	question: string;
-	field: string;
 	createdAt: string;
 	promptId: string;
 	searchTerm: string;
@@ -41,7 +40,6 @@ export type PromptType = {
 	id: string;
 	userId: string;
 	researchQuestion: string;
-	researchField: string;
 	createdAt: string;
 	searchResultsSummary: string;
 	searchTerms: SearchTerm[];

@@ -8,7 +8,6 @@ import {
 	CardTitle
 } from "@/components/ui/card";
 import ResearchOutput from "@/components/ResearchOutput";
-import ResearchPaperSidebar from "@/components/ResearchPaperSidebar";
 import NavigationSidebar from "@/components/NavigationSidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { prisma } from "@/lib/db";
@@ -39,21 +38,21 @@ const PromptResults = async ({ params: { promptId } }: Props) => {
 
 	return (
 		<>
-			<main className="flex flex-col items-center justify-center">
-				<ResearchPaperSidebar />
+			<main className="flex min-h-screen pt-8">
+				<div className="flex-1 p-4 transition-all duration-300 ease-in-out ml-0 lg:mr-72">
+					<ScrollArea className="max-w-[1080px] mx-auto max-h-[90vh] overflow-auto">
+						<Card className="mb-8">
+							<CardHeader id="research-question">
+								<CardTitle className="leading-7">Research question</CardTitle>
+								<CardDescription className="text-lg">
+									{prompt ? prompt.researchQuestion : "Loading prompt..."}
+								</CardDescription>
+							</CardHeader>
+						</Card>
+						<ResearchOutput initialPrompt={prompt as unknown as PromptType} />
+					</ScrollArea>
+				</div>
 				<NavigationSidebar />
-
-				<ScrollArea className="max-w-[1080px] mx-auto max-h-[90vh] overflow-auto">
-					<Card className="mb-8">
-						<CardHeader id="research-question">
-							<CardTitle className="leading-7">Research question</CardTitle>
-							<CardDescription className="text-lg">
-								{prompt ? prompt.researchQuestion : "Loading prompt..."}
-							</CardDescription>
-						</CardHeader>
-					</Card>
-					<ResearchOutput initialPrompt={prompt as unknown as PromptType} />
-				</ScrollArea>
 			</main>
 		</>
 	);

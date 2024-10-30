@@ -3,12 +3,10 @@ export const maxDuration = 300;
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { wordwareGenerator } from "@/lib/wordwareGenerator";
-import { cleanupStringToJSON } from "@/lib/cleanStringToJSON";
 
 export async function POST(req: Request, res: Response) {
 	try {
-		const { selectedHypothesis } = await req.json();
-		console.log("Selected Hypothesis:", selectedHypothesis);
+		let { selectedHypothesis, instructions } = await req.json();
 
 		// Find singular hypothesis
 		const hypothesisInstance = await prisma.hypothesisGeneration.findUnique({
@@ -45,10 +43,13 @@ export async function POST(req: Request, res: Response) {
 		selectedPaper = allSavedPapers[randomIndex];
 		console.log("Selected paper:", selectedPaper);
 		console.log("Hypothesis instance", hypothesisInstance);
-
+		if (instructions.trim() === "") {
+			instructions = "No specific instructions";
+		}
 		const inputs = {
 			selected_hypothesis: hypothesisInstance.hypothesis,
-			selected_paper: selectedPaper.summary
+			selected_paper: selectedPaper.summary,
+			instructions: instructions
 		};
 		const newHypothesis = await wordwareGenerator({
 			inputs: inputs,

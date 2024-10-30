@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import useResearchStore from "@/store/useResearchStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles } from "lucide-react";
-
+import ResearchPaperSidebar from "@/components/ResearchPaperSidebar";
 const NavigationSection = ({
 	id,
 	label,
@@ -107,9 +107,11 @@ const NavigationSidebar = () => {
 	}
 
 	return (
-		<div className="fixed left-0 top-0 h-screen w-72 border-r bg-background p-4">
+		<div className="fixed right-0 top-0 h-screen w-72 border-r bg-background p-4 pt-8 hidden lg:block">
 			<ScrollArea className="h-full">
-				<nav className="space-y-2">
+				<ResearchPaperSidebar />
+
+				<nav className="space-y-2 mt-4">
 					{/* Research Question - Always present */}
 					<NavigationSection
 						key="research-question" // Added key here

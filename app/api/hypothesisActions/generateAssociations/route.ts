@@ -7,14 +7,7 @@ import { cleanupStringToJSON } from "@/lib/cleanStringToJSON";
 
 export async function POST(req: Request, res: Response) {
 	try {
-		const { selectedHypothesis, reframeResearchQuestionSelected } =
-			await req.json();
-		console.log("Selected Hypothesis:", selectedHypothesis);
-		console.log(
-			"Reframe Research Question Selected:",
-			reframeResearchQuestionSelected
-		);
-
+		const { selectedHypothesis } = await req.json();
 		// selected hypothesis is a list of hypothesis ids
 		// fetch all hypothesis
 		const hypothesisGenerationArray =
@@ -47,8 +40,7 @@ export async function POST(req: Request, res: Response) {
 			all_hypothesis: hypotheses,
 			search_results: prompt.searchResultsSummary,
 			research_question: prompt.researchQuestion,
-			instructions: "No specific instructions",
-			reframe_research_question: reframeResearchQuestionSelected
+			instructions: "No specific instructions"
 		};
 		const newHypothesis = await wordwareGenerator({
 			inputs: inputs,
@@ -66,13 +58,7 @@ export async function POST(req: Request, res: Response) {
 				justification: hypothesisJson.reasoning
 			}
 		});
-		// // Fetch all hypothesis
-		// const allHypothesis = await prisma.hypothesisGeneration.findMany({
-		// 	where: {
-		// 		promptId: prompt.id
-		// 	}
-		// });
-		// console.log("New Hypothesis:", allHypothesis);
+
 		return NextResponse.json({
 			newHypothesisInstance
 		});

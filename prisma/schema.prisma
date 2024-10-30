@@ -23,7 +23,6 @@ model Prompt {
   id                   String                 @id @default(cuid())
   userId               String
   researchQuestion     String
-  researchField        String
   createdAt            DateTime               @default(now())
   searchResultsSummary String                 @default("")
   hypothesisGeneration HypothesisGeneration[]
@@ -37,7 +36,6 @@ model Prompt {
 model SearchTerms {
   id            String          @id @default(cuid())
   question      String
-  field         String
   createdAt     DateTime        @default(now())
   promptId      String
   searchTerm    String

@@ -10,7 +10,6 @@ export async function POST(req: Request, res: Response) {
 		const searchTermsInstance: SearchTermType[] =
 			await searchTerms.searchTermInstance;
 		// Search terms is an array of search terms
-		console.log("Search terms:", searchTermsInstance);
 		const searchResultsArray = Promise.all(
 			searchTermsInstance.map(
 				async (searchTerm: SearchTermType, index: Number) => {
@@ -25,18 +24,14 @@ export async function POST(req: Request, res: Response) {
 							id: searchTerm.promptId
 						}
 					});
-					console.log("Existing prompt:", existingPrompt);
 					if (existingSearchResults) {
-						console.log("Search result exists:", existingSearchResults);
 						if (existingPrompt?.searchResultsSummary !== "") {
-							console.log("Search results summary exists:");
 							NextResponse.json({
 								searchResultsSummary: existingPrompt?.searchResultsSummary
 							});
 						}
 						return existingSearchResults;
 					} else {
-						console.log("Creating new search results instance");
 						// Construct an saved papers array from the search term
 						// construct inputs
 						// Get saved papers from search term
@@ -45,7 +40,6 @@ export async function POST(req: Request, res: Response) {
 								searchTermsId: searchTerm.id
 							}
 						});
-						console.log("Saved papers from route:", savedPapers);
 						const inputs = {
 							search_terms: searchTerm.searchTerm,
 							saved_papers: JSON.stringify(savedPapers)

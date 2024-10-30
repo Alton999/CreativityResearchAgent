@@ -30,6 +30,7 @@ const BranchOffExistingHypothesisModal = ({
 		HypothesisGenerationTypes[]
 	>([]);
 	const [selectedHypothesis, setSelectedHypothesis] = useState<string[]>([]);
+	const [instructions, setInstructions] = useState<string>("");
 	const [generateAssociationButtonActive, setGenerateAssociationButtonActive] =
 		useState<boolean>(false);
 
@@ -49,7 +50,8 @@ const BranchOffExistingHypothesisModal = ({
 		const response = await axios.post(
 			"/api/hypothesisActions/generateBranchedHypothesis",
 			{
-				selectedHypothesis
+				selectedHypothesis,
+				instructions
 			}
 		);
 		toast({
@@ -89,10 +91,13 @@ const BranchOffExistingHypothesisModal = ({
 			closeModal={() => setSelectedHypothesisGenerationModal("")}
 		>
 			<p>
-				In this action you as the lead scientist is able to find connections,
-				similarities and associate multiple generated hypothesis. This action
-				has the potential to expand the boundaries of creativity within each
-				hypothesis to create something truly unique.
+				In this action you will be able to branch off an existing hypothesis.
+				The goal here is to find a hypothesis that you associate with and lead
+				it in a direction you want.
+			</p>
+			<p>
+				In addition, the system will pull a random paper in your system to
+				associate with.
 			</p>
 			<div>
 				<h3 className="font-bold mb-2">
@@ -137,6 +142,20 @@ const BranchOffExistingHypothesisModal = ({
 						))}
 					</ScrollArea>
 				)}
+			</div>
+			<div>
+				<label htmlFor="name instruction">
+					Custom instructions: (Optional)
+				</label>
+				<textarea
+					name="instruction"
+					id="instruction"
+					cols={20}
+					rows={10}
+					className="border border-slate-400 p-3 rounded-lg w-full"
+					value={instructions}
+					onChange={(e) => setInstructions(e.target.value)}
+				/>
 			</div>
 			{/* <div className="border border-slate-400 p-4 rounded-lg flex justify-between">
 				<div>

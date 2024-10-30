@@ -181,7 +181,6 @@ const HypothesisCard = ({ hypothesisInstance, index }: HypothesisCardProps) => {
 			)}
 
 			<div className="flex flex-col gap-4 mt-4">
-				<h3 className="font-bold">Hypothesis regeneration actions:</h3>
 				<div className="flex gap-4">
 					<Button
 						variant={"outline"}

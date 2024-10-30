@@ -19,7 +19,7 @@ export async function POST(req: Request, res: Response) {
 	}
 	try {
 		const body = await req.json();
-		const { question, field } = promptInputsSchema.parse(body);
+		const { question } = promptInputsSchema.parse(body);
 
 		const userIdString = userId.value as string;
 		console.log("User ID:", userIdString);
@@ -38,15 +38,13 @@ export async function POST(req: Request, res: Response) {
 		const promptInstance = await prisma.prompt.create({
 			data: {
 				userId: userIdString,
-				researchQuestion: question,
-				researchField: field
+				researchQuestion: question
 			}
 		});
 
 		// Construct the input variables to wordware
 		const searchTermsInputs = {
-			research_question: question,
-			fields: field
+			research_question: question
 		};
 
 		const searchTerms = await wordwareGenerator({
@@ -63,7 +61,6 @@ export async function POST(req: Request, res: Response) {
 			return {
 				promptId: promptInstance.id,
 				question: question,
-				field: field,
 				searchTerm: term.searchTerm,
 				explanation: term.explanation
 			};
