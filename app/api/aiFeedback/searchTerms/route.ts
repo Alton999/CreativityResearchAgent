@@ -3,7 +3,6 @@ export const maxDuration = 300;
 import { feedbackSchema } from "@/schemas/feedback";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { cookies } from "next/headers";
 import { searchTermFeedbackWordware } from "@/lib/searchTermFeedbackWordware";
 
 export async function POST(req: Request, res: Response) {
@@ -26,7 +25,6 @@ export async function POST(req: Request, res: Response) {
 				searchTerm: newSearchTerm.searchTerm,
 				explanation: newSearchTerm.explanation,
 				question: searchTerm.question,
-				field: searchTerm.field,
 				newSearchTerm: true
 			}
 		});
