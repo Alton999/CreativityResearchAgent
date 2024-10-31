@@ -2,7 +2,6 @@ import { z } from "zod";
 const searchTermSchema = z.object({
 	id: z.string(),
 	question: z.string(),
-	field: z.string(),
 	createdAt: z.string(),
 	promptId: z.string(),
 	searchTerm: z.string(),
