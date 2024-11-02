@@ -3,6 +3,7 @@ export const maxDuration = 300;
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { wordwareGenerator } from "@/lib/wordwareGenerator";
+import { cleanupStringToJSON } from "@/lib/cleanStringToJSON";
 
 export async function POST(req: Request, res: Response) {
 	try {
@@ -56,10 +57,13 @@ export async function POST(req: Request, res: Response) {
 			wordwarePromptId: "66acef55-3df0-4fc0-9e6e-40f5bb30e087"
 		});
 
+		const hypothesisJson = JSON.parse(cleanupStringToJSON(newHypothesis, ""));
 		const newHypothesisInstance = await prisma.hypothesisGeneration.create({
 			data: {
 				promptId: hypothesisInstance.promptId,
-				hypothesis: newHypothesis
+				hypothesis: hypothesisJson.hypothesis,
+				justification: hypothesisJson.reasoning,
+				hypothesisTitle: hypothesisJson.hypothesisTitle
 			}
 		});
 

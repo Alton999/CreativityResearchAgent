@@ -76,7 +76,11 @@ const HypothesisCard = ({ hypothesisInstance, index }: HypothesisCardProps) => {
 			className="p-4 border border-gray-200 rounded-md shadow-sm"
 		>
 			<div className="w-full flex justify-between items-center">
-				<h2 className="font-bold text-lg">Hypothesis: {index + 1}</h2>
+				<h2 className="font-bold text-lg">
+					{hypothesisInstance.hypothesisTitle !== ""
+						? hypothesisInstance.hypothesisTitle
+						: `Hypothesis ${index + 1}`}
+				</h2>
 				<div className="py-2">
 					<Button
 						variant={"outline"}

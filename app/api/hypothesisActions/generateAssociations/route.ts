@@ -55,7 +55,8 @@ export async function POST(req: Request, res: Response) {
 			data: {
 				promptId: prompt.id,
 				hypothesis: hypothesisJson.hypothesis,
-				justification: hypothesisJson.reasoning
+				justification: hypothesisJson.reasoning,
+				hypothesisTitle: hypothesisJson.hypothesisTitle
 			}
 		});
 

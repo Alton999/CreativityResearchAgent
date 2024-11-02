@@ -31,6 +31,7 @@ export type HypothesisGeneration = {
 	id: string;
 	promptId: string;
 	hypothesis: string;
+	hypothesisTitle: string;
 	proposedExperiments: string;
 	justification: string;
 	createdAt: string;

@@ -76,6 +76,7 @@ model HypothesisGeneration {
   id                  String              @id @default(cuid())
   promptId            String
   hypothesis          String
+  hypothesisTitle     String              @default("")
   proposedExperiments String              @default("")
   justification       String              @default("")
   forcedAssociations  ForcedAssociation[]

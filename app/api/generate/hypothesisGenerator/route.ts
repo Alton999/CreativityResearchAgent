@@ -39,7 +39,8 @@ export async function POST(req: Request, res: Response) {
 			(hypothesis: HypothesisGenerationTypes) => {
 				return {
 					promptId: promptInstance.id,
-					hypothesis: hypothesis.hypothesis
+					hypothesis: hypothesis.hypothesis,
+					hypothesisTitle: hypothesis.hypothesisTitle
 				};
 			}
 		);
