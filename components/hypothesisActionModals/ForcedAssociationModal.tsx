@@ -59,7 +59,6 @@ const ForcedAssociationModal = ({
 			variant: "success",
 			description: "Check out the new hypothesis at the bottom of the page."
 		});
-		console.log("Response from hypothesis association", response);
 		onAddHypothesis(response.data.newHypothesisInstance);
 		setNewHypothesisStatus("done");
 
@@ -68,7 +67,7 @@ const ForcedAssociationModal = ({
 
 	// Track button enable state
 	useEffect(() => {
-		if (selectedHypothesis.length > 2) {
+		if (selectedHypothesis.length >= 2 && selectedHypothesis.length <= 3) {
 			setGenerateAssociationButtonActive(true);
 		}
 	}, [selectedHypothesis]);
@@ -163,6 +162,7 @@ const ForcedAssociationModal = ({
 			<Button
 				onClick={() => generateAssociation()}
 				disabled={!generateAssociationButtonActive}
+				className="w-full"
 			>
 				Start Association
 			</Button>

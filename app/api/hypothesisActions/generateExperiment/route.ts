@@ -43,8 +43,6 @@ export async function POST(req: Request, res: Response) {
 			};
 		}
 		// Generate experiments via wordware
-
-		console.log("Generating experiment:", inputs);
 		const experiment = await wordwareGenerator({
 			inputs: inputs,
 			wordwarePromptId: "f25f5a1f-844c-4c01-9927-b2af1f8adf28"
@@ -59,10 +57,7 @@ export async function POST(req: Request, res: Response) {
 					proposedExperiments: experiment
 				}
 			});
-		console.log(
-			"Experiment generated, new hypothesis instance",
-			updatedHypothesisGeneration
-		);
+
 		return NextResponse.json({
 			updatedHypothesisGeneration
 		});

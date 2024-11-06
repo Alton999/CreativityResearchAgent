@@ -11,7 +11,6 @@ export async function POST(req: Request, res: Response) {
 				{ status: 400 }
 			);
 		}
-		console.log("Prompt ID:", promptId);
 		const prompt = await prisma.prompt.findUnique({
 			where: {
 				id: promptId
@@ -23,6 +22,7 @@ export async function POST(req: Request, res: Response) {
 		if (!prompt) {
 			return NextResponse.json({ error: "Prompt not found" }, { status: 400 });
 		}
+		console.log("Prompt:", prompt.hypothesisGeneration);
 		return NextResponse.json(prompt.hypothesisGeneration);
 	} catch (error) {
 		console.error("Error fetching hypothesis:");

@@ -42,8 +42,7 @@ export async function POST(req: Request, res: Response) {
 		);
 		const randomIndex = Math.floor(Math.random() * allSavedPapers.length);
 		selectedPaper = allSavedPapers[randomIndex];
-		console.log("Selected paper:", selectedPaper);
-		console.log("Hypothesis instance", hypothesisInstance);
+
 		if (instructions.trim() === "") {
 			instructions = "No specific instructions";
 		}

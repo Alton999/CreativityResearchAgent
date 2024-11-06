@@ -59,7 +59,6 @@ const BranchOffExistingHypothesisModal = ({
 			variant: "success",
 			description: "Check out the new hypothesis at the bottom of the page."
 		});
-		console.log("Response from hypothesis association", response);
 		onAddHypothesis(response.data.newHypothesisInstance);
 		setNewHypothesisStatus("done");
 
@@ -119,7 +118,9 @@ const BranchOffExistingHypothesisModal = ({
 									onClick={() => toggleHypothesisSelection(hypothesis.id)}
 								>
 									<div>
-										<h3 className="font-bold mb-2">Hypothesis: {index + 1}</h3>
+										<h3 className="font-bold mb-2">
+											{hypothesis.hypothesisTitle}
+										</h3>
 										<p className="text-slate-500 text-sm">
 											{hypothesis.hypothesis.length > 120
 												? `${hypothesis.hypothesis.substring(0, 120)}...`
@@ -145,8 +146,8 @@ const BranchOffExistingHypothesisModal = ({
 					</ScrollArea>
 				)}
 			</div>
-			<div>
-				<label htmlFor="name instruction">
+			<div className="space-y-2">
+				<label htmlFor="name instruction" className="font-bold">
 					Custom instructions: (Optional)
 				</label>
 				<textarea

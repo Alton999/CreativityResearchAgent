@@ -43,10 +43,12 @@ const GenerateExperimentModal = ({
 	};
 	return (
 		<ModalLayout
-			title="Generate feedback"
+			title="Generate experiments"
 			closeModal={() => setActionToggleOpen("")}
 		>
-			<label htmlFor="name instruction">Custom instructions: (Optional)</label>
+			<label htmlFor="experiment instruction">
+				Custom instructions: (Optional)
+			</label>
 			<Textarea
 				name="experiment instruction"
 				id="experimentInstruction"

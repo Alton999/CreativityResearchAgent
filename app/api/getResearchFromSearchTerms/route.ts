@@ -72,6 +72,7 @@ export async function POST(req: Request) {
 			},
 			take: 3
 		});
+
 		if (allPapers.length > 0) {
 			console.log("Returning existing papers:", allPapers.length);
 			return NextResponse.json({ allPapers: allPapers });
@@ -94,6 +95,7 @@ export async function POST(req: Request) {
 					"Summarize the content of the text, DO NOT include things about the author, or the source its from"
 			}
 		});
+
 		// Can I clean up the author field with REGEX checks?
 		const formattedPaperData = result.results.map((paper: any) => ({
 			paperId: paper.id,
@@ -109,6 +111,7 @@ export async function POST(req: Request) {
 			url: paper.url,
 			searchTermsId: searchTerm.id
 		}));
+
 		// Use transaction to ensure atomic operation
 		const savedPapers = await prisma.$transaction(async (tx) => {
 			// Delete any existing papers for this search term (cleanup)

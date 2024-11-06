@@ -85,7 +85,6 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
 				setSavedPapers(searchTerm.id, response.data.allPapers);
 			}
 		} catch (err: any) {
-			console.error("Error fetching papers:", err);
 			setError(err?.response?.data?.error || "Failed to fetch research papers");
 		} finally {
 			setLoadingPaperStatus("done");
@@ -145,7 +144,7 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
 								<ul className="w-full flex flex-col gap-4">
 									{searchTerm.savedPapers.map((paper, index) => (
 										<li
-											key={index}
+											key={`${paper.id}-${index}`}
 											className="w-full p-4 border border-gray-400 rounded-lg space-y-3"
 										>
 											<h4 className="text-lg font-bold">{paper.title}</h4>
@@ -231,9 +230,11 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
 													))}
 												</ul>
 											</div>
-											<div>
-												<p>Year published: {paper.publishedYear}</p>
-											</div>
+											{paper.publishedYear !== 0 && (
+												<div>
+													<p>Year published: {paper.publishedYear}</p>
+												</div>
+											)}
 										</li>
 									))}
 								</ul>

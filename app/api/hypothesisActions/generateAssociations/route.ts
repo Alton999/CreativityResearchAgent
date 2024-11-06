@@ -8,6 +8,11 @@ import { cleanupStringToJSON } from "@/lib/cleanStringToJSON";
 export async function POST(req: Request, res: Response) {
 	try {
 		const { selectedHypothesis } = await req.json();
+		if (selectedHypothesis.length < 2 || selectedHypothesis.length > 3) {
+			return NextResponse.json({
+				error: "Please select 2 or 3 hypothesis to generate associations"
+			});
+		}
 		// selected hypothesis is a list of hypothesis ids
 		// fetch all hypothesis
 		const hypothesisGenerationArray =

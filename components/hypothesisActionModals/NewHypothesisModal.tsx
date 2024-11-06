@@ -71,6 +71,7 @@ const NewHypothesisModal = ({
 					// console.log("Button pressed");
 					generateHypothesis();
 				}}
+				className="w-full"
 			>
 				Generate hypothesis
 			</Button>
