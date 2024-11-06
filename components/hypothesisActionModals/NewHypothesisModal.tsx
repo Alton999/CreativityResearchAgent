@@ -52,17 +52,20 @@ const NewHypothesisModal = ({
 				Note: If you do not include any instructions the system will
 				automatically decide a topic that is worth exploring.
 			</p>
-			<label htmlFor="name instruction">
-				Custom instructions for new hypothesis
-			</label>
-			<Textarea
-				required
-				name="new hypothesis instruction"
-				id="newHypothesisInstruction"
-				rows={8}
-				// className="border border-primary rounded-lg bg-slate-100 p-1.5"
-				onChange={(e) => setInstructions(e.target.value)}
-			/>
+			<div className="space-y-2 py-2">
+				<label htmlFor="name instruction" className="font-bold">
+					New hypothesis instruction
+				</label>
+				<Textarea
+					required
+					name="new hypothesis instruction"
+					id="newHypothesisInstruction"
+					rows={8}
+					placeholder="Lets focus this hypothesis along the lines of..."
+					// className="border border-primary rounded-lg bg-slate-100 p-1.5"
+					onChange={(e) => setInstructions(e.target.value)}
+				/>
+			</div>
 			<Button
 				onClick={() => {
 					// console.log("Button pressed");

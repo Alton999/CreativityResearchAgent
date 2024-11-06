@@ -1,4 +1,3 @@
-// Page used for redirection to the correct page
 import PromptInputs from "@/components/PromptInputs";
 import { prisma } from "@/lib/db";
 import { cookies } from "next/headers";

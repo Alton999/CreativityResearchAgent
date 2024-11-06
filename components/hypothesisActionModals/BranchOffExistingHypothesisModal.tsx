@@ -106,40 +106,42 @@ const BranchOffExistingHypothesisModal = ({
 				{hypothesisLoading ? (
 					<Loader2 className="animate-spin" size={24} />
 				) : (
-					<ScrollArea className="max-h-[400px] flex flex-col gap-4 pr-3.5">
-						{allHypothesis.map((hypothesis, index) => (
-							<div
-								key={hypothesis.id}
-								className={`border border-slate-400 p-3 rounded-lg cursor-pointer flex justify-between mb-4 ${
-									selectedHypothesis.includes(hypothesis.id)
-										? "bg-slate-200"
-										: ""
-								}`}
-								onClick={() => toggleHypothesisSelection(hypothesis.id)}
-							>
-								<div>
-									<h3 className="font-bold mb-2">Hypothesis: {index + 1}</h3>
-									<p className="text-slate-500 text-sm">
-										{hypothesis.hypothesis.length > 120
-											? `${hypothesis.hypothesis.substring(0, 120)}...`
-											: hypothesis.hypothesis}
-									</p>
+					<ScrollArea className="max-h-[350px] flex flex-col gap-4">
+						<div className="pl-6 border-l border-slate-400">
+							{allHypothesis.map((hypothesis, index) => (
+								<div
+									key={hypothesis.id}
+									className={`border border-slate-400 p-3 rounded-lg cursor-pointer flex justify-between mb-4 ${
+										selectedHypothesis.includes(hypothesis.id)
+											? "bg-slate-200"
+											: ""
+									}`}
+									onClick={() => toggleHypothesisSelection(hypothesis.id)}
+								>
+									<div>
+										<h3 className="font-bold mb-2">Hypothesis: {index + 1}</h3>
+										<p className="text-slate-500 text-sm">
+											{hypothesis.hypothesis.length > 120
+												? `${hypothesis.hypothesis.substring(0, 120)}...`
+												: hypothesis.hypothesis}
+										</p>
+									</div>
+									<Circle
+										size={32}
+										color={
+											selectedHypothesis.includes(hypothesis.id)
+												? "#34495e"
+												: "gray"
+										}
+										fill={
+											selectedHypothesis.includes(hypothesis.id)
+												? "#34495e"
+												: "none"
+										}
+									/>
 								</div>
-								<Circle
-									size={32}
-									color={
-										selectedHypothesis.includes(hypothesis.id)
-											? "#34495e"
-											: "gray"
-									}
-									fill={
-										selectedHypothesis.includes(hypothesis.id)
-											? "#34495e"
-											: "none"
-									}
-								/>
-							</div>
-						))}
+							))}
+						</div>
 					</ScrollArea>
 				)}
 			</div>
@@ -157,27 +159,9 @@ const BranchOffExistingHypothesisModal = ({
 					onChange={(e) => setInstructions(e.target.value)}
 				/>
 			</div>
-			{/* <div className="border border-slate-400 p-4 rounded-lg flex justify-between">
-				<div>
-					<h3 className="font-bold mb-2">Reframe research question</h3>
-					<p className="text-slate-500 text-sm">
-						By selecting this option you are able to reframe your initial
-						research question based on the new associations made between the
-						hypothesis.
-					</p>
-				</div>
-				<Switch
-					checked={reframeResearchQuestionSelected}
-					onCheckedChange={() => {
-						setReframeResearchQuestionSelected(
-							!reframeResearchQuestionSelected
-						);
-					}}
-				/>
-			</div> */}
-			{/* <label htmlFor="name instruction">Custom instructions: (Optional)</label> */}
 
 			<Button
+				className="w-full"
 				onClick={() => generateAssociation()}
 				disabled={!generateAssociationButtonActive}
 			>
