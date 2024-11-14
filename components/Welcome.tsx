@@ -37,8 +37,8 @@ const Welcome = () => {
                 evaluation.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <p className="border-l-4 border-gray-800 pl-8">
+            <CardContent className="space-y-2">
+              <p>
                 This is an early exploration of how an AI agent might be helpful
                 in human-AI collaborative hypothesis generation and scientific
                 creativity. At the moment you can ask it a research question and
@@ -51,6 +51,39 @@ const Welcome = () => {
                 aong3299@uni.sydney.edu.au, we&apos;d love to hear your
                 thoughts!
               </p>
+              <div className="p-4 bg-yellow-200/20 border border-yellow-400 rounded-lg space-y-4">
+                <p className="text-lg font-semibold">Privacy Policy</p>
+                <p className="border-l-4 border-gray-800 pl-8">
+                  The Designing with AI Lab at the University of Sydney has
+                  developed this tool as part of research into AI and scientific
+                  creativity. This system uses exa.ai and Claude, here are links
+                  to their privacy policies: (
+                  <a
+                    className="underline text-blue-600"
+                    href="https://exa.ai/privacy-policy"
+                  >
+                    Exa AI
+                  </a>
+                  ) (
+                  <a
+                    className="underline text-blue-600"
+                    href="https://www.wordware.ai/privacy-policy#:~:text=Information%20We%20Collect,you%20interact%20with%20our%20platform."
+                  >
+                    Wordware
+                  </a>
+                  ) by using this system you should be aware that your data will
+                  be shared with those services through their APIs as part of
+                  generating your results. Unless you have explicitly signed a
+                  consent form to participate in a university-approved research
+                  study with this tool, then your data will not be shared with
+                  anyone, not be used as part of research or commercial
+                  activity, and will only be kept for improving this tool. If
+                  you have signed a consent form to participate in a
+                  university-approved research study, and are using this tool as
+                  part of that study, that form will describe the additional
+                  ways that your data may be used for research.
+                </p>
+              </div>
             </CardContent>
             <CardFooter>
               <section className="space-y-8">

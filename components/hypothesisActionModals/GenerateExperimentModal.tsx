@@ -46,16 +46,18 @@ const GenerateExperimentModal = ({
 			title="Generate experiments"
 			closeModal={() => setActionToggleOpen("")}
 		>
-			<label htmlFor="experiment instruction">
-				Custom instructions: (Optional)
-			</label>
-			<Textarea
-				name="experiment instruction"
-				id="experimentInstruction"
-				rows={8}
-				// className="border border-primary rounded-lg bg-slate-100 p-1.5"
-				onChange={(e) => setInstructions(e.target.value)}
-			/>
+			<div className="space-y-2">
+				<label htmlFor="experiment instruction" className="font-bold">
+					Custom instructions: (Optional)
+				</label>
+				<Textarea
+					name="experiment instruction"
+					id="experimentInstruction"
+					rows={8}
+					// className="border border-primary rounded-lg bg-slate-100 p-1.5"
+					onChange={(e) => setInstructions(e.target.value)}
+				/>
+			</div>
 			<Button
 				onClick={() => {
 					// console.log("Button pressed");
