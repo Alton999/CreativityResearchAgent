@@ -5,27 +5,30 @@ import { prisma } from "@/lib/db";
 export async function POST(req: Request, res: Response) {
 	try {
 		const { savedPaperId, promptId } = await req.json();
-		await prisma.savedPaper.delete({
-			where: {
-				id: savedPaperId
-			}
-		});
+
+		const paperToDelete = await prisma.savedPaper.findUnique({
+            where: {
+                id: savedPaperId
+            }
+        });
+
+    if (!paperToDelete) {
+        return NextResponse.json({ error: "Saved paper not found" });
+    }
+
+    await prisma.savedPaper.delete({
+      where: {
+          id: savedPaperId
+      }
+    });
 
 		// Return back the entire fetch to refresh the UI
-		const prompt = await prisma.prompt.findUnique({
-			where: {
-				id: promptId
-			},
-			select: {
-				searchTerms: {
-					select: {
-						savedPapers: true
-					}
-				}
-			}
-		});
-		if (!prompt) return NextResponse.json({ error: "Prompt not found" });
-		const savedPapers = prompt.searchTerms.flatMap((term) => term.savedPapers);
+		const savedPapers = await prisma.savedPaper.findMany({
+      where: {
+          searchTermsId: paperToDelete.searchTermsId
+      }
+    });
+
 		console.log("Saved paper deleted successfully");
 		return NextResponse.json({
 			savedPapers
