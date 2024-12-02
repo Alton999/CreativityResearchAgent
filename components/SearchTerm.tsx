@@ -45,19 +45,26 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string>("");
   const [fetchAttempted, setFetchAttempted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loadingPapers, setLoadingPapers] = useState<Record<string, boolean>>(
+    {},
+  );
 
   const deleteSavedPaper = async (
     savedPaperId: string,
     searchTermId: string,
   ) => {
-    setLoading(true);
-    await axios.post("/api/deleteSavedPaper", {
-      savedPaperId,
-      promptId: prompt?.id,
-    });
-    removeSavedPaper(searchTermId, savedPaperId);
-    setLoading(false);
+    setLoadingPapers((prev) => ({ ...prev, [savedPaperId]: true }));
+    try {
+      console.log("Saved paper id from delete function:", savedPaperId);
+      await axios.post("/api/deleteSavedPaper", {
+        savedPaperId,
+      });
+      removeSavedPaper(searchTermId, savedPaperId);
+    } catch (error) {
+      console.error("Failed to delete paper:", error);
+    } finally {
+      setLoadingPapers((prev) => ({ ...prev, [savedPaperId]: false }));
+    }
   };
   const toggleAbstract = (paperId: string) => {
     setExpandedAbstractId((prevId) => (prevId === paperId ? null : paperId));
@@ -170,7 +177,7 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
                       <div className="flex justify-between items-center">
                         <h4 className="text-lg font-bold">{paper.title}</h4>
                         <Button
-                          disabled={loading}
+                          disabled={loadingPapers[paper.id]}
                           variant="ghost"
                           size="sm"
                           onClick={(e) => {
@@ -179,7 +186,7 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
                           }}
                           className="h-8 w-8 p-1"
                         >
-                          {loading ? (
+                          {loadingPapers[paper.id] ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
                             <Trash2 className="h-4 w-4 text-slate-400 hover:text-red-400" />
@@ -258,14 +265,18 @@ const SearchTerm = ({ searchTermId, index }: SearchTermProps) => {
                       <div>
                         <h4 className="font-bold">Authors</h4>
                         <ul className="flex flex-wrap gap-3">
-                          {paper.authors.map((author, index) => (
-                            <li
-                              key={index + author}
-                              className="px-2 py-1 rounded-sm bg-gray-300"
-                            >
-                              {author}
-                            </li>
-                          ))}
+                          {paper.authors.length > 0 ? (
+                            paper.authors.map((author, index) => (
+                              <li
+                                key={index + author}
+                                className="px-2 py-1 rounded-sm bg-gray-300"
+                              >
+                                {author}
+                              </li>
+                            ))
+                          ) : (
+                            <li>Authors not detect for this paper</li>
+                          )}
                         </ul>
                       </div>
                       {paper.publishedYear !== 0 && (
